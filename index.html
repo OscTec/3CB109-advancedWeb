@@ -9,473 +9,579 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
       <script>
-         //var url = "http://cs2s.yorkdc.net"
-         var url = "http://osctec.co.uk"
-         var port = ":5011"
-         var server = url + port + "/"
+         //Server web address
+            //var url = "http://cs2s.yorkdc.net"
+            var url = "http://osctec.co.uk"
+            //Server port number
+            var port = ":5011"
+            //Combining Address and port number with / to create first part of API request
+            var server = url + port + "/"
 
 
 
 
 
-         //Code to send CoD stats to server and have them inputted in MySQL DB
-         function sendCoDStats() {
-           var playerID = document.getElementById("sendCoDPlayerID").value
-           var mapID = document.getElementById("sendCoDMapID").value
-           var gameModeID = document.getElementById("sendCoDGameModeID").value
-           var kills = document.getElementById("sendCoDKills").value
-           var deaths = document.getElementById("sendCoDDeaths").value
-           var assists = document.getElementById("sendCoDAssists").value
-           var accuracy = document.getElementById("sendCoDAccuracy").value
-         var xhttp = new XMLHttpRequest();
-             xhttp.onreadystatechange = function() {
-                 if(this.readyState == 4 && this.status == 200) {
-                     console.log('success');
-                     } else {
-                         console.log('error ' + this.status);
-                     }
-                 }
-             xhttp.open("GET", server + "sendCoD/" + playerID + "/" + mapID + "/" + gameModeID + "/" + kills + "/" + deaths + "/" + assists + "/" + accuracy, true);
-             xhttp.send();
-         }
+            //Code to send CoD stats to server and have them inputted in MySQL DB
+            function sendCoDStats() {
+              //Getting values from input field
+              var playerID = document.getElementById("sendCoDPlayerID").value
+              var mapID = document.getElementById("sendCoDMapID").value
+              var gameModeID = document.getElementById("sendCoDGameModeID").value
+              var kills = document.getElementById("sendCoDKills").value
+              var deaths = document.getElementById("sendCoDDeaths").value
+              var assists = document.getElementById("sendCoDAssists").value
+              var accuracy = document.getElementById("sendCoDAccuracy").value
 
-         //Delete from CoD using EntryID and AuthCode
-         function delCoDEntry() {
-           var EntryID = document.getElementById("sendCoDEntryID").value
-           var AuthCode = document.getElementById("sendCoDAuthCode").value
-         var xhttp = new XMLHttpRequest();
-             xhttp.onreadystatechange = function() {
-                 if(this.readyState == 4 && this.status == 200) {
-                     console.log('success');
-                     document.getElementById("delText").innerHTML = "Entry " + EntryID + " Deleted";
-                     } else {
-                         console.log('error ' + this.status);
-                     }
-                 }
-             xhttp.open("POST", server + "delCoD/" + EntryID + "/" + AuthCode, true);
-             xhttp.send();
-         }
+            var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        console.log('success');
+                        } else {
+                            console.log('error ' + this.status);
+                        }
+                    }
+                    //API address with values from field added to it
+                xhttp.open("GET", server + "sendCoD/" + playerID + "/" + mapID + "/" + gameModeID + "/" + kills + "/" + deaths + "/" + assists + "/" + accuracy, true);
+                xhttp.send();
+            }
 
-         //Used to find CoD games for one player
-         function getCoDStatsByID() {
-         var playerID = document.getElementById("getByCoDPlayerID").value;
-         var xhttp = new XMLHttpRequest();
-             xhttp.onreadystatechange = function() {
-                 if(this.readyState == 4 && this.status == 200) {
-                     data = JSON.parse(this.response);
-                     var Parent = document.getElementById("statsTableCoD");
-                     while(Parent.hasChildNodes())
-                     {
-                       Parent.removeChild(Parent.firstChild);
-                     }
-                     for (i = 0; i < data.results.length; i++) {
-                       var eID = data.results[i].entryID;
-                       var pID = data.results[i].playerID;
-                       var mID = data.results[i].mapID;
-                       var gID = data.results[i].gameModeID;
-                       var kills = data.results[i].kills;
-                       var deaths = data.results[i].deaths;
-                       var assists = data.results[i].assists;
-                       var accuracy = data.results[i].accuracy;
-                       addCoDRow(eID, pID, mID, gID, kills, deaths, assists, accuracy);
-                     }
-                     console.log('success');
-                     } else {
-                         console.log('error ' + this.status);
-                     }
-                 }
-                 if(playerID == ""){
-                   xhttp.open("GET", server + "getCoD", true);
-                 } else {
-                   xhttp.open("GET", server + "getCoD/" + playerID, true);
-                 }
+            //Delete from CoD using EntryID and AuthCode
+            function delCoDEntry() {
+              var EntryID = document.getElementById("sendCoDEntryID").value
+              var AuthCode = document.getElementById("sendCoDAuthCode").value
+            var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        console.log('success');
+                        //document.getElementById("delText").innerHTML = "Entry " + EntryID + " Deleted";
+                        document.getElementById("delText").innerHTML = this.response;
+                        } else {
+                            console.log('error ' + this.status);
+                        }
+                    }
+                    //Delete CoD stat API address with EntryID and Authorisation caode attached
+                xhttp.open("POST", server + "delCoD/" + EntryID + "/" + AuthCode, true);
+                xhttp.send();
+            }
 
-             xhttp.send();
-         }
+            //Used to find CoD games for one player
+            function getCoDStatsByID() {
+            var playerID = document.getElementById("getByCoDPlayerID").value;
+            var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                      //Parse the returned JSON data
+                        data = JSON.parse(this.response);
+                        var Parent = document.getElementById("statsTableCoD");
+                        while(Parent.hasChildNodes())
+                        {
+                          Parent.removeChild(Parent.firstChild);
+                        }
+                        //Takes value from the JSON data
+                        for (i = 0; i < data.results.length; i++) {
+                          var eID = data.results[i].entryID;
+                          var pID = data.results[i].playerID;
+                          var mID = data.results[i].mapID;
+                          var gID = data.results[i].gameModeID;
+                          var kills = data.results[i].kills;
+                          var deaths = data.results[i].deaths;
+                          var assists = data.results[i].assists;
+                          var accuracy = data.results[i].accuracy;
+                          //Send values to method to add rows to the stat table
+                          addCoDRow(eID, pID, mID, gID, kills, deaths, assists, accuracy);
+                        }
+                        console.log('success');
+                        } else {
+                            console.log('error ' + this.status);
+                        }
+                    }
+                    //Has two options for API calls one with a player ID and one
+                    //without depeding on if user provide a player id
+                    if(playerID == ""){
+                      xhttp.open("GET", server + "getCoD", true);
+                    } else {
+                      xhttp.open("GET", server + "getCoD/" + playerID, true);
+                    }
 
-         //Used to add rows from JSON
-         function addCoDRow(eID, pID, mID, gID, kill, death, assist, acc) {
-           var table = document.getElementById("statsTableCoD");
-           var row = table.insertRow(-1);
-           var cell0 = row.insertCell(0);
-           var cell1 = row.insertCell(1);
-           var cell2 = row.insertCell(2);
-           var cell3 = row.insertCell(3);
-           var cell4 = row.insertCell(4);
-           var cell5 = row.insertCell(5);
-           var cell6 = row.insertCell(6);
-           var cell7 = row.insertCell(7);
+                xhttp.send();
+            }
 
-           cell0.innerHTML = eID;
-           cell1.innerHTML = pID;
-           cell2.innerHTML = mID;
-           cell3.innerHTML = gID;
-           cell4.innerHTML = kill;
-           cell5.innerHTML = death;
-           cell6.innerHTML = assist;
-           cell7.innerHTML = acc;
-         }
+            //Used to add rows from JSON
+            function addCoDRow(eID, pID, mID, gID, kill, death, assist, acc) {
+              var table = document.getElementById("statsTableCoD");
+              var row = table.insertRow(-1);
+              var cell0 = row.insertCell(0);
+              var cell1 = row.insertCell(1);
+              var cell2 = row.insertCell(2);
+              var cell3 = row.insertCell(3);
+              var cell4 = row.insertCell(4);
+              var cell5 = row.insertCell(5);
+              var cell6 = row.insertCell(6);
+              var cell7 = row.insertCell(7);
 
-         function sendD2Stats() {
-           var playerID = document.getElementById("sendD2PlayerID").value
-           var mapID = document.getElementById("sendD2MapID").value
-           var MotesDeposited = document.getElementById("sendMotesDeposited").value
-           var HostilesDefeated = document.getElementById("sendHostilesDefeated").value
-           var Guardiansdefeated = document.getElementById("sendGuardiansDefeated").value
-           var MotesLost = document.getElementById("sendMotesLost").value
-           var PrimevalHealed = document.getElementById("sendPrimevalHealed").value
-         var xhttp = new XMLHttpRequest();
-             xhttp.onreadystatechange = function() {
-                 if(this.readyState == 4 && this.status == 200) {
-                     console.log('success');
-                     } else {
-                         console.log('error ' + this.status);
-                     }
-                 }
-             xhttp.open("GET", server + "sendD2/" + playerID + "/" + mapID + "/" + MotesDeposited + "/" + HostilesDefeated + "/" + Guardiansdefeated + "/" + MotesLost + "/" + PrimevalHealed, true);
-             xhttp.send();
-         }
+              cell0.innerHTML = eID;
+              cell1.innerHTML = pID;
+              cell2.innerHTML = mID;
+              cell3.innerHTML = gID;
+              cell4.innerHTML = kill;
+              cell5.innerHTML = death;
+              cell6.innerHTML = assist;
+              cell7.innerHTML = acc;
+            }
 
-         function delD2Entry() {
-           var EntryID = document.getElementById("sendD2EntryID").value
-           var AuthCode = document.getElementById("sendD2AuthCode").value
-         var xhttp = new XMLHttpRequest();
-             xhttp.onreadystatechange = function() {
-                 if(this.readyState == 4 && this.status == 200) {
-                     console.log('success');
-                     document.getElementById("delText").innerHTML = "Entry " + EntryID + " Deleted";
-                     } else {
-                         console.log('error ' + this.status);
-                     }
-                 }
-             xhttp.open("POST", server + "delD2/" + EntryID + "/" + AuthCode, true);
-             xhttp.send();
-         }
+            function sendD2Stats() {
+              var playerID = document.getElementById("sendD2PlayerID").value
+              var mapID = document.getElementById("sendD2MapID").value
+              var MotesDeposited = document.getElementById("sendMotesDeposited").value
+              var HostilesDefeated = document.getElementById("sendHostilesDefeated").value
+              var Guardiansdefeated = document.getElementById("sendGuardiansDefeated").value
+              var MotesLost = document.getElementById("sendMotesLost").value
+              var PrimevalHealed = document.getElementById("sendPrimevalHealed").value
+            var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        console.log('success');
+                        } else {
+                            console.log('error ' + this.status);
+                        }
+                    }
+                xhttp.open("GET", server + "sendD2/" + playerID + "/" + mapID + "/" + MotesDeposited + "/" + HostilesDefeated + "/" + Guardiansdefeated + "/" + MotesLost + "/" + PrimevalHealed, true);
+                xhttp.send();
+            }
 
-         function getD2StatsByID() {
-         var playerID = document.getElementById("getByD2PlayerID").value;
-         var xhttp = new XMLHttpRequest();
-             xhttp.onreadystatechange = function() {
-                 if(this.readyState == 4 && this.status == 200) {
-                     data = JSON.parse(this.response);
-                     var Parent = document.getElementById("statsTableD2");
-                     while(Parent.hasChildNodes())
-                     {
-                       Parent.removeChild(Parent.firstChild);
-                     }
-                     for (i = 0; i < data.results.length; i++) {
-                       var eID = data.results[i].EntryID;
-                       var pID = data.results[i].playerID;
-                       var mID = data.results[i].mapID;
-                       var mDepo = data.results[i].MotesDeposited;
-                       var hosDe = data.results[i].HostilesDefeated;
-                       var guardDe = data.results[i].GuardiansDefeated;
-                       var mLost = data.results[i].MotesLost;
-                       var priHeal = data.results[i].PrimevalHealed;
-                       addD2Row(eID, pID, mID, mDepo, hosDe, guardDe, mLost, priHeal);
-                     }
-                     console.log('success');
-                     } else {
-                         console.log('error ' + this.status);
-                     }
-                 }
-                 if(playerID == ""){
-                   xhttp.open("GET", server + "getD2", true);
-                 } else {
-                   xhttp.open("GET", server + "getD2/" + playerID, true);
-                 }
+            function delD2Entry() {
+              var EntryID = document.getElementById("sendD2EntryID").value
+              var AuthCode = document.getElementById("sendD2AuthCode").value
+            var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        console.log('success');
+                        document.getElementById("delText").innerHTML = "Entry " + EntryID + " Deleted";
+                        } else {
+                            console.log('error ' + this.status);
+                        }
+                    }
+                xhttp.open("POST", server + "delD2/" + EntryID + "/" + AuthCode, true);
+                xhttp.send();
+            }
 
-             xhttp.send();
-         }
+            function getD2StatsByID() {
+            var playerID = document.getElementById("getByD2PlayerID").value;
+            var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        data = JSON.parse(this.response);
+                        var Parent = document.getElementById("statsTableD2");
+                        while(Parent.hasChildNodes())
+                        {
+                          Parent.removeChild(Parent.firstChild);
+                        }
+                        for (i = 0; i < data.results.length; i++) {
+                          var eID = data.results[i].EntryID;
+                          var pID = data.results[i].playerID;
+                          var mID = data.results[i].mapID;
+                          var mDepo = data.results[i].MotesDeposited;
+                          var hosDe = data.results[i].HostilesDefeated;
+                          var guardDe = data.results[i].GuardiansDefeated;
+                          var mLost = data.results[i].MotesLost;
+                          var priHeal = data.results[i].PrimevalHealed;
+                          addD2Row(eID, pID, mID, mDepo, hosDe, guardDe, mLost, priHeal);
+                        }
+                        console.log('success');
+                        } else {
+                            console.log('error ' + this.status);
+                        }
+                    }
+                    if(playerID == ""){
+                      xhttp.open("GET", server + "getD2", true);
+                    } else {
+                      xhttp.open("GET", server + "getD2/" + playerID, true);
+                    }
 
-
-         function addD2Row(eID, pID, mID, mDepo, hosDe, guardDe, mLost, priHeal) {
-           var table = document.getElementById("statsTableD2");
-           var row = table.insertRow(-1);
-           var cell0 = row.insertCell(0);
-           var cell1 = row.insertCell(1);
-           var cell2 = row.insertCell(2);
-           var cell3 = row.insertCell(3);
-           var cell4 = row.insertCell(4);
-           var cell5 = row.insertCell(5);
-           var cell6 = row.insertCell(6);
-           var cell7 = row.insertCell(7);
-
-           cell0.innerHTML = eID;
-           cell1.innerHTML = pID;
-           cell2.innerHTML = mID;
-           cell3.innerHTML = mDepo;
-           cell4.innerHTML = hosDe;
-           cell5.innerHTML = guardDe;
-           cell6.innerHTML = mLost;
-           cell7.innerHTML = priHeal;
-         }
+                xhttp.send();
+            }
 
 
+            function addD2Row(eID, pID, mID, mDepo, hosDe, guardDe, mLost, priHeal) {
+              var table = document.getElementById("statsTableD2");
+              var row = table.insertRow(-1);
+              var cell0 = row.insertCell(0);
+              var cell1 = row.insertCell(1);
+              var cell2 = row.insertCell(2);
+              var cell3 = row.insertCell(3);
+              var cell4 = row.insertCell(4);
+              var cell5 = row.insertCell(5);
+              var cell6 = row.insertCell(6);
+              var cell7 = row.insertCell(7);
 
-         //Pages
-         var activePage;
+              cell0.innerHTML = eID;
+              cell1.innerHTML = pID;
+              cell2.innerHTML = mID;
+              cell3.innerHTML = mDepo;
+              cell4.innerHTML = hosDe;
+              cell5.innerHTML = guardDe;
+              cell6.innerHTML = mLost;
+              cell7.innerHTML = priHeal;
+            }
 
-         function setPages() {
-           var D2Page = document.getElementById("D2Stats");
-           var CoDPage = document.getElementById("CoDStats");
+            function compareD2Stats() {
+            var p1ID = document.getElementById("getD2P1").value;
+            var p2ID = document.getElementById("getD2P2").value;
+            //var p1;
+            //var p2;
+            //p1 = getD2AvgStats(12);
+            //p2 = getD2AvgStats(13);
+            //getD2AvgStats(12)
+            getD2AvgStats(p1ID);
+            //console.log(p1);
+            wait(1000); //http://www.endmemo.com/js/pause.php
+            getD2AvgStats(p2ID);
+            //console.log(p2);
+            wait(1000); //http://www.endmemo.com/js/pause.php
 
-         }
+            //addComD2Row(p1ID ,p1[0], p1[1], p1[2], p1[3], p1[4]);
+            //addComD2Row(p2ID, p2[0], p2[1], p2[2], p2[3], p2[4]);
+            //console.log(p2);
+            }
 
-         function getHomePage() {
-           var CoDPage = document.getElementById("HomePage");
-           if (CoDPage.style.display === "none") {
-             activePage.style.display = "none";
-             activePage = document.getElementById("HomePage");
-             CoDPage.style.display = "block";
-           } else {
-             CoDPage.style.display = "none";
-           }
-         }
+            function addComD2Row(pID, mDepo, hosDe, guardDe, mLost, priHeal) {
+              var table = document.getElementById("comTableD2");
+              var row = table.insertRow(-1);
+              var cell0 = row.insertCell(0);
+              var cell1 = row.insertCell(1);
+              var cell2 = row.insertCell(2);
+              var cell3 = row.insertCell(3);
+              var cell4 = row.insertCell(4);
+              var cell5 = row.insertCell(4);
 
-         function getCoDPage() {
-           var CoDPage = document.getElementById("CoDStats");
-           if (CoDPage.style.display === "none") {
-             activePage.style.display = "none";
-             activePage = document.getElementById("CoDStats");
-             CoDPage.style.display = "block";
-           } else {
-             CoDPage.style.display = "none";
-           }
-         }
+              cell0.innerHTML = pID;
+              cell1.innerHTML = mDepo;
+              cell2.innerHTML = hosDe;
+              cell3.innerHTML = guardDe;
+              cell4.innerHTML = mLost;
+              cell5.innerHTML = priHeal;
+            }
 
-         function getD2Page() {
-          var D2Page = document.getElementById("D2Stats");
-           if (D2Page.style.display === "none") {
-             activePage.style.display = "none";
-             activePage = document.getElementById("D2Stats");
-             D2Page.style.display = "block";
-           } else {
-             D2Page.style.display = "none";
-           }
-         }
+            function getD2AvgStats(playerID) {
+              var pCounter = 0;
+              var pMotesDeposited = 0;
+              var pHostilesDefeated = 0;
+              var pGuardiansDefeated = 0;
+              var pMotesLost = 0;
+              var pPrimevalHealed = 0;
 
-         function hide() {
-           //getD2Page()
-           //getCoDPage()
-           var D2Page = document.getElementById("D2Stats");
-           D2Page.style.display = "none";
-           var CoDPage = document.getElementById("CoDStats");
-           CoDPage.style.display = "none";
-           activePage = document.getElementById("HomePage");
-         }
+              var xhttp = new XMLHttpRequest();
+                  xhttp.onreadystatechange = function() {
+                      if(this.readyState == 4 && this.status == 200) {
+                          data = JSON.parse(this.response);
+                          for (i = 0; i < data.results.length; i++) {
+                            pMotesDeposited += parseInt(data.results[i].MotesDeposited);
+                            pHostilesDefeated += parseInt(data.results[i].HostilesDefeated);
+                            pGuardiansDefeated += parseInt(data.results[i].GuardiansDefeated);
+                            pMotesLost += parseInt(data.results[i].MotesLost);
+                            pPrimevalHealed += parseInt(data.results[i].PrimevalHealed);
+                            pCounter++;
+                          }
+                          //var data = new Array(pMotesDeposited/pCounter, pHostilesDefeated/pCounter, pGuardiansDefeated/pCounter, pMotesLost/pCounter, pPrimevalHealed/pCounter)
+                          addComD2Row(playerID, pMotesDeposited/pCounter, pHostilesDefeated/pCounter, pGuardiansDefeated/pCounter, pMotesLost/pCounter, pPrimevalHealed/pCounter)
+                          //return "Done";
+                          //console.log(data);
+                          } else {
+                              console.log('error ' + this.status);
+                          }
+                      }
+                      xhttp.open("GET", server + "getD2/" + playerID, true);
+                  xhttp.send();
+            }
+
+            function wait(ms)
+            {
+              var d = new Date();
+              var d2 = null;
+              do { d2 = new Date(); }
+              while(d2-d < ms);
+            }
+
+
+
+
+            //Pages
+            var activePage;
+
+            function setPages() {
+              var D2Page = document.getElementById("D2Stats");
+              var CoDPage = document.getElementById("CoDStats");
+
+            }
+
+            function getHomePage() {
+              var CoDPage = document.getElementById("HomePage");
+              if (CoDPage.style.display === "none") {
+                activePage.style.display = "none";
+                activePage = document.getElementById("HomePage");
+                CoDPage.style.display = "block";
+              } else {
+                CoDPage.style.display = "none";
+              }
+            }
+
+            function getCoDPage() {
+              var CoDPage = document.getElementById("CoDStats");
+              if (CoDPage.style.display === "none") {
+                activePage.style.display = "none";
+                activePage = document.getElementById("CoDStats");
+                CoDPage.style.display = "block";
+              } else {
+                CoDPage.style.display = "none";
+              }
+            }
+
+            function getD2Page() {
+             var D2Page = document.getElementById("D2Stats");
+              if (D2Page.style.display === "none") {
+                activePage.style.display = "none";
+                activePage = document.getElementById("D2Stats");
+                D2Page.style.display = "block";
+              } else {
+                D2Page.style.display = "none";
+              }
+            }
+
+            function hide() {
+              //getD2Page()
+              //getCoDPage()
+              var D2Page = document.getElementById("D2Stats");
+              D2Page.style.display = "none";
+              var CoDPage = document.getElementById("CoDStats");
+              CoDPage.style.display = "none";
+              activePage = document.getElementById("HomePage");
+            }
 
 
 
 
       </script>
-
+      <!--CSS to hide the different all divs but the main menu-->
       <style>
-#CoDStats { display: none;}
-#D2Stats { display: none;}
-
-</style>
+         #CoDStats { display: none;}
+         #D2Stats { display: none;}
+      </style>
    </head>
    <body onload="hide()">
-     <div id="StatsPages">
-     <div class="row">
-       <div class="col"><button type="button" class="btn btn-dark" onclick="getHomePage()">Home</button></div>
-       <div class="col"><button type="button" class="btn btn-danger" onclick="getCoDPage()">CoD BLOPS 4</button></div>
-       <div class="col"><button type="button" class="btn btn-dark" onclick="getD2Page()">Destiny 2</button></div>
-       <div class="col"><button type="button" class="btn btn-dark" onclick="getCompareStatsPage()">Compare Stats</button></div>
-       <div class="col"><button type="button" class="btn btn-dark" onclick="getFindGamePage()">Find Game</button></div>
-     </div>
-
-     <div id="HomePage">
-       <h2>Home Page</h2>
-     </div>
-     <!-- CoD Page -->
-      <div id="CoDStats">
-        <h2>Submit CoD Stats</h2>
-        <div class="row">
-           <div class="col">
-              <form>
-                 <input type="text" class="form-control" id="sendCoDPlayerID" name="sendPlayerID" placeholder="Player ID">
-           </div>
-           <div class="col">
-           <select class="custom-select mb-3" id="sendCoDMapID" name="sendCoDMapID">
-           <option selected>Select Map</option>
-           <option value="Containers">Containers</option>
-           <option value="Village">Village</option>
-           <option value="Ocean Vila">Ocean Vila</option>
-           </select>
-           </div>
-           <div class="col">
-           <select class="custom-select mb-3" id="sendCoDGameModeID" name="sendCoDGameModeID">
-           <option selected>Select Gamemode</option>
-           <option value="Team Death Match">Team Death Match</option>
-           <option value="Free For All">Free For All</option>
-           <option value="Infected">Infected</option>
-           </select>
-           </div>
-           <div class="col">
-           <input type="text" class="form-control" id="sendCoDKills" name="sendCoDKills" placeholder="Number of Kill">
-           </div>
-           <div class="col">
-           <input type="text" class="form-control" id="sendCoDDeaths" name="sendCoDDeaths" placeholder="Number of Deaths">
-           </div>
-           <div class="col">
-           <input type="text" class="form-control" id="sendCoDAssists" name="sendCoDAssists" placeholder="Number of Assists">
-           </div>
-           <div class="col">
-           <input type="text" class="form-control" id="sendCoDAccuracy" name="sendCoDAccuracy" placeholder="Accuracy">
-           </div>
-           <div class="col">
-           <button type="button" class="btn btn-primary" id="hashButton" onclick="sendCoDStats()">Submit</button>
-           </div>
-           </form>
-        </div>
-        <p>  <br /> </p>
-
-        <h2>Delete CoD stats using Entry ID</h2>
-        <div class="row">
-           <div class="col">
-              <form>
-                 <input type="text" class="form-control" id="sendCoDEntryID" name="sendCoDEntryID" placeholder="Entry ID">
-           </div>
-           <div class="col">
-           <input type="text" class="form-control" id="sendCoDAuthCode" name="sendCoDAuthCode" placeholder="Authorization Code">
-           </div>
-           <div class="col">
-           <button type="button" class="btn btn-primary" id="hashButton" onclick="delCoDEntry()">Submit</button>
-           </div>
-           </form>
-        </div>
-        <h2 id="delText"></h2>
-        <p>  <br /> </p>
-
-
-      <h2>Search CoD stats using Player ID</h2>
-      <div class="row">
-         <div class="col">
-            <form>
-               <input type="text" class="form-control" id="getByCoDPlayerID" name="getByPlayerID" placeholder="Player ID">
+      <div id="StatsPages">
+        <!-- Nav Bar -->
+         <div class="row">
+            <div class="col"><button type="button" class="btn btn-dark" onclick="getHomePage()">Home</button></div>
+            <div class="col"><button type="button" class="btn btn-danger" onclick="getCoDPage()">CoD BLOPS 4</button></div>
+            <div class="col"><button type="button" class="btn btn-dark" onclick="getD2Page()">Destiny 2</button></div>
+            <div class="col"><button type="button" class="btn btn-dark" onclick="getCompareStatsPage()">Compare Stats</button></div>
+            <div class="col"><button type="button" class="btn btn-dark" onclick="getFindGamePage()">Find Game</button></div>
          </div>
-         <div class="col">
-         <button type="button" class="btn btn-primary" id="hashButton" onclick="getCoDStatsByID()">Submit</button>
+         <div id="HomePage">
+            <h2>Home Page</h2>
          </div>
-         </form>
+         <!-- CoD Page -->
+         <div id="CoDStats">
+            <h2>Submit CoD Stats</h2>
+            <!-- Submit stats input fields -->
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="sendCoDPlayerID" name="sendPlayerID" placeholder="Player ID">
+               </div>
+               <div class="col">
+               <select class="custom-select mb-3" id="sendCoDMapID" name="sendCoDMapID">
+               <option selected>Select Map</option>
+               <option value="Containers">Containers</option>
+               <option value="Village">Village</option>
+               <option value="Ocean Vila">Ocean Vila</option>
+               </select>
+               </div>
+               <div class="col">
+               <select class="custom-select mb-3" id="sendCoDGameModeID" name="sendCoDGameModeID">
+               <option selected>Select Gamemode</option>
+               <option value="Team Death Match">Team Death Match</option>
+               <option value="Free For All">Free For All</option>
+               <option value="Infected">Infected</option>
+               </select>
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendCoDKills" name="sendCoDKills" placeholder="Number of Kill">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendCoDDeaths" name="sendCoDDeaths" placeholder="Number of Deaths">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendCoDAssists" name="sendCoDAssists" placeholder="Number of Assists">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendCoDAccuracy" name="sendCoDAccuracy" placeholder="Accuracy">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="sendCoDStats()">Submit</button>
+               </div>
+               </form>
+            </div>
+            <p>  <br /> </p>
+            <h2>Delete CoD stats using Entry ID</h2>
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="sendCoDEntryID" name="sendCoDEntryID" placeholder="Entry ID">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendCoDAuthCode" name="sendCoDAuthCode" placeholder="Authorization Code">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="delCoDEntry()">Submit</button>
+               </div>
+               </form>
+            </div>
+            <h2 id="delText"></h2>
+            <p>  <br /> </p>
+            <h2>Search CoD stats using Player ID</h2>
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="getByCoDPlayerID" name="getByPlayerID" placeholder="Player ID">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="getCoDStatsByID()">Submit</button>
+               </div>
+               </form>
+            </div>
+            <p>  <br /> </p>
+            <!--Input form -->
+            <!--End Input form -->
+            <div class="container">
+               <h2>CoD Stats</h2>
+               <table id="statsTableCoD" class="table table-hover">
+                  <tr>
+                     <td>Entry ID</td>
+                     <td>Player ID</td>
+                     <td>Map ID</td>
+                     <td>Game Mode ID</td>
+                     <td>Kills</td>
+                     <td>Deaths</td>
+                     <td>Assists</td>
+                     <td>Accuracy</td>
+                  </tr>
+               </table>
+            </div>
+            <br>
+         </div>
+         <!-- Destiny 2 Forms -->
+         <div id="D2Stats">
+            <h2>Submit Destiny 2 Stats</h2>
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="sendD2PlayerID" name="sendD2PlayerID" placeholder="Player ID">
+               </div>
+               <div class="col">
+               <select class="custom-select mb-3" id="sendD2MapID" name="sendD2MapID">
+               <option selected>Select Map</option>
+               <option value="Kell's Grave">Kell's Grave</option>
+               <option value="Legion's Folly">Legion's Folly</option>
+               <option value="Cathedral of Scars">Cathedral of Scars</option>
+               <option value="Emerald Coast">Emerald Coast</option>
+               </select>
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendMotesDeposited" name="sendMotesDeposited" placeholder="Motes Deposited">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendHostilesDefeated" name="sendHostilesDefeated" placeholder="Hostiles Defeated">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendGuardiansDefeated" name="sendGuardiansDefeated" placeholder="Guardians Defeated">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendMotesLost" name="sendMotesLost" placeholder="Motes Lost">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendPrimevalHealed" name="sendPrimevalHealed" placeholder="Primeval Healed">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="sendD2Stats()">Submit</button>
+               </div>
+               </form>
+            </div>
+            <p>  <br /> </p>
+            <h2>Delete Destiny 2 stats using Entry ID</h2>
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="sendD2EntryID" name="sendD2EntryID" placeholder="Entry ID">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="sendD2AuthCode" name="sendD2AuthCode" placeholder="Authorization Code">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="delD2Entry()">Submit</button>
+               </div>
+               </form>
+            </div>
+            <h2 id="delText"></h2>
+            <p>  <br /> </p>
+            <h2>Search Destiny 2 stats using Player ID</h2>
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="getByD2PlayerID" name="getByD2PlayerID" placeholder="Player ID">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="getD2StatsByID()">Submit</button>
+               </div>
+               </form>
+            </div>
+            <p>  <br /> </p>
+            <div class="container">
+               <h2>Destiny 2 Stats</h2>
+               <table id="statsTableD2" class="table table-hover">
+                  <tr>
+                     <td>Entry ID</td>
+                     <td>Player ID</td>
+                     <td>Map ID</td>
+                     <td>Motes Deposited</td>
+                     <td>Hostiles Defeated</td>
+                     <td>Guardians Defeated</td>
+                     <td>MotesLost</td>
+                     <td>Primeval Healed</td>
+                  </tr>
+               </table>
+            </div>
+            <br>
+            <h2>Compare Destiny 2 player stats using Player ID</h2>
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="getD2P1" name="getD2P1" placeholder="Player 1">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="getD2P2" name="getD2P2" placeholder="Player 2">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="compareD2Stats()">Submit</button>
+               </div>
+               </form>
+            </div>
+            <div class="container">
+               <h2>CoD Stats</h2>
+               <table id="comTableD2" class="table table-hover">
+                  <tr>
+                     <td>Player ID</td>
+                     <td>Motes Deposited</td>
+                     <td>Hostiles Defeated</td>
+                     <td>Guardians Defeated</td>
+                     <td>MotesLost</td>
+                     <td>Primeval Healed</td>
+                  </tr>
+               </table>
+            </div>
+
+         </div>
       </div>
-      <p>  <br /> </p>
-
-      <!--Input form -->
-
-      <!--End Input form -->
-      <div class="container">
-         <h2>CoD Stats</h2>
-         <table id="statsTableCoD" class="table table-hover">
-            <tr>
-               <td>Entry ID</td>
-               <td>Player ID</td>
-               <td>Map ID</td>
-               <td>Game Mode ID</td>
-               <td>Kills</td>
-               <td>Deaths</td>
-               <td>Assists</td>
-               <td>Accuracy</td>
-            </tr>
-         </table>
       </div>
-      <br>
-    </div>
-
-
-      <!-- Destiny 2 Forms -->
-      <div id="D2Stats">
-      <h2>Submit Destiny 2 Stats</h2>
-      <div class="row">
-         <div class="col">
-            <form>
-               <input type="text" class="form-control" id="sendD2PlayerID" name="sendD2PlayerID" placeholder="Player ID">
-         </div>
-         <div class="col">
-         <select class="custom-select mb-3" id="sendD2MapID" name="sendD2MapID">
-         <option selected>Select Map</option>
-         <option value="Kell's Grave">Kell's Grave</option>
-         <option value="Legion's Folly">Legion's Folly</option>
-         <option value="Cathedral of Scars">Cathedral of Scars</option>
-         <option value="Emerald Coast">Emerald Coast</option>
-         </select>
-         </div>
-         <div class="col">
-         <input type="text" class="form-control" id="sendMotesDeposited" name="sendMotesDeposited" placeholder="Motes Deposited">
-         </div>
-         <div class="col">
-         <input type="text" class="form-control" id="sendHostilesDefeated" name="sendHostilesDefeated" placeholder="Hostiles Defeated">
-         </div>
-         <div class="col">
-         <input type="text" class="form-control" id="sendGuardiansDefeated" name="sendGuardiansDefeated" placeholder="Guardians Defeated">
-         </div>
-         <div class="col">
-         <input type="text" class="form-control" id="sendMotesLost" name="sendMotesLost" placeholder="Motes Lost">
-         </div>
-         <div class="col">
-         <input type="text" class="form-control" id="sendPrimevalHealed" name="sendPrimevalHealed" placeholder="Primeval Healed">
-         </div>
-         <div class="col">
-         <button type="button" class="btn btn-primary" id="hashButton" onclick="sendD2Stats()">Submit</button>
-         </div>
-         </form>
-      </div>
-      <p>  <br /> </p>
-
-
-      <h2>Delete Destiny 2 stats using Entry ID</h2>
-      <div class="row">
-         <div class="col">
-            <form>
-               <input type="text" class="form-control" id="sendD2EntryID" name="sendD2EntryID" placeholder="Entry ID">
-         </div>
-         <div class="col">
-         <input type="text" class="form-control" id="sendD2AuthCode" name="sendD2AuthCode" placeholder="Authorization Code">
-         </div>
-         <div class="col">
-         <button type="button" class="btn btn-primary" id="hashButton" onclick="delD2Entry()">Submit</button>
-         </div>
-         </form>
-      </div>
-      <h2 id="delText"></h2>
-      <p>  <br /> </p>
-
-      <h2>Search Destiny 2 stats using Player ID</h2>
-      <div class="row">
-         <div class="col">
-            <form>
-               <input type="text" class="form-control" id="getByD2PlayerID" name="getByD2PlayerID" placeholder="Player ID">
-         </div>
-         <div class="col">
-         <button type="button" class="btn btn-primary" id="hashButton" onclick="getD2StatsByID()">Submit</button>
-         </div>
-         </form>
-      </div>
-      <p>  <br /> </p>
-
-      <div class="container">
-         <h2>Destiny 2 Stats</h2>
-         <table id="statsTableD2" class="table table-hover">
-            <tr>
-               <td>Entry ID</td>
-               <td>Player ID</td>
-               <td>Map ID</td>
-               <td>Motes Deposited</td>
-               <td>Hostiles Defeated</td>
-               <td>Guardians Defeated</td>
-               <td>MotesLost</td>
-               <td>Primeval Healed</td>
-            </tr>
-         </table>
-      </div>
-      <br>
-    </div>
-
-
-    </div>
-  </div>
-
    </body>
 </html>

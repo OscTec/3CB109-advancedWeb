@@ -4,11 +4,20 @@ Student ID: 169063841
 On CS2S Server the files are located at: /home/oscar.reid/htdocs
 Server File is called: server.py
 Client File is called: index.html
+jQuery File is called: jquery-3.3.1.min.js
 
 
-URL of Web Client is: http://cs2s.yorkdc.net/~oscar.reid/index.html
+URL of Web Client is: http://cs2s.yorkdc.net/~oscar.reid/
 URL for Web Server is: http://cs2s.yorkdc.net:5011
 Assigned port number: 5011
+
+Install instructions
+The server requires several prerequisite libraries to run:
+sudo apt-get install pip
+pip install flask
+pip install flask-mysql
+pip install -U flask-cors
+Pip install requests
 
 Database Username: oscar.reid
 Database Password: 6wfCwA7O
@@ -26,14 +35,6 @@ Destiny 2 table name: D2
 8 Columns:
 EntryID, Player ID, Map Name, Game mode, Kills, Deaths, Assists, Accuracy
 int AUTO_INCREMENT, varchar, varchar, varchar, varchar, varchar, varchar, varchar
-
-
-Install instructions
-The server requires 3 libraries to run:
-
-request which enables the server to do API calls
-Pip install requests
-
 
 
 API Calls and what they do:
@@ -74,8 +75,10 @@ Do this it gives this ect.
 Advanced features:
 
 
+Giving Credit:
+JavaScript wait function http://www.endmemo.com/js/pause.php
 
-Hand In to Moodle requires:
+Moodle hand in requires:
 server.py
 index.html
 jquery-3.3.1.min.js
@@ -84,17 +87,13 @@ README.md
 
 
 To Do List:
-Tidy MYSQL
-Tidy CS2S htdocs
-Add a PUT API
 Compare Stats for two players
+Add a PUT API
 Find 2 player games from Steam for 2 players
 Validate inputs
 More stuff
 Perfect things
 
+Write up:
 Complete Guide written
-Write up
-Comments
-Update table section of README
 Reference all code from external sources in code and write up

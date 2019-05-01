@@ -11,7 +11,7 @@ HostURL = '192.168.0.32'
 SteamID = '76561198058093131'
 
 restServer = Flask(__name__)
-CORS(restServer)
+CORS(restServer) #Allows CORS
 mysql = MySQL()
 
 restServer.config['MYSQL_DATABASE_USER'] = 'oscar.reid'
@@ -24,7 +24,7 @@ mysql.init_app(restServer)
 conn = mysql.connect()
 cursor = conn.cursor()
 
-
+#Headers to allow CORS
 @restServer.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
@@ -32,21 +32,19 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-
+#Default route
 @restServer.route("/")
 def test():
-    cursor.execute("ALTER TABLE `CoD`  AUTO_INCREMENT = 0")
-    conn.commit()
     return "Hello"
 
-
+#Adds data to CoD table
 @restServer.route("/sendCoD/<playerID>/<mapID>/<gameModeID>/<kills>/<deaths>/<assists>/<accuracy>", methods=['GET'])
 def sendCoD(playerID, mapID, gameModeID, kills, deaths, assists, accuracy):
     cursor.execute("INSERT INTO CoD (playerID, mapID, gameModeID, kills, deaths, assists, accuracy) VALUES (%s, %s, %s, %s, %s, %s, %s)", (playerID, mapID, gameModeID, kills, deaths, assists, accuracy))
     conn.commit()
     return "Success"
 
-#Delete Entry From CoD Table
+#Delete Entry From CoD Table providing authcode mayches
 @restServer.route("/delCoD/<EntryID>/<AuthCode>", methods=['POST'])
 def delCoD(EntryID, AuthCode):
     if AuthCode == "123":
@@ -58,20 +56,21 @@ def delCoD(EntryID, AuthCode):
     else:
         return "Incorrect AuthCode"
 
-
+#Returns all data in CoD table in JSON format
 @restServer.route("/getCoD", methods=['GET'])
 def getCoD():
     resultList = []
     records = []
     cursor.execute("SELECT * FROM CoD")
     result = cursor.fetchall()
-    for i in result:
+    for i in result:#for each result
+    #put it in JSON format
         statList = {'entryID': i[0], 'playerID': i[1], 'mapID': i[2], 'gameModeID': i[3], 'kills': i[4], 'deaths': i[5], 'assists': i[6], 'accuracy': i[7]}
-        resultList.append(statList)
+        resultList.append(statList) #add it to list
     records = {'results': resultList}
-    return jsonify(records)
+    return jsonify(records) #return list
 
-
+#Retuns specified player data from CoD table in JSON format
 @restServer.route("/getCoD/<playerID>", methods=['GET'])
 def getCoDWithID(playerID):
     resultList = []
@@ -92,7 +91,7 @@ def sendD2(playerID, mapID, MotesDeposited, HostilesDefeated, GuardiansDefeated,
     conn.commit()
     return "Success"
 
-#Send Destiny 2 data to MySQL DB
+#Deletes a entry from D2 table providing authcode matches
 @restServer.route("/delD2/<EntryID>/<AuthCode>", methods=['POST'])
 def delD2(EntryID, AuthCode):
     if AuthCode == "123":
@@ -104,7 +103,7 @@ def delD2(EntryID, AuthCode):
     else:
         return "Incorrect AuthCode"
 
-
+#Returns all data in D2 table in JSON format
 @restServer.route("/getD2", methods=['GET'])
 def getD2():
     resultList = []
@@ -117,7 +116,7 @@ def getD2():
     records = {'results': resultList}
     return jsonify(records)
 
-
+#Retuns specified player data from CoD table in JSON format
 @restServer.route("/getD2/<playerID>", methods=['GET'])
 def getD2WithID(playerID):
     resultList = []
@@ -134,5 +133,5 @@ def getD2WithID(playerID):
 
 if __name__ == '__main__':
     print("== Running in debug mode ==")
-    restServer.run(host='192.168.0.32', port=5011, debug=True)
+    restServer.run(host='192.168.0.32', port=5011, debug=True, threaded=True)
     #restServer.run(host='cs2s.yorkdc.net', port=5011, debug=True)
