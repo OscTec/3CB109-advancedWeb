@@ -20,13 +20,13 @@
 
          //Code to send CoD stats to server and have them inputted in MySQL DB
          function sendCoDStats() {
-           var playerID = document.getElementById("sendPlayerID").value
-           var mapID = document.getElementById("sendMapID").value
-           var gameModeID = document.getElementById("sendGameModeID").value
-           var kills = document.getElementById("sendKills").value
-           var deaths = document.getElementById("sendDeaths").value
-           var assists = document.getElementById("sendAssists").value
-           var accuracy = document.getElementById("sendAccuracy").value
+           var playerID = document.getElementById("sendCoDPlayerID").value
+           var mapID = document.getElementById("sendCoDMapID").value
+           var gameModeID = document.getElementById("sendCoDGameModeID").value
+           var kills = document.getElementById("sendCoDKills").value
+           var deaths = document.getElementById("sendCoDDeaths").value
+           var assists = document.getElementById("sendCoDAssists").value
+           var accuracy = document.getElementById("sendCoDAccuracy").value
          var xhttp = new XMLHttpRequest();
              xhttp.onreadystatechange = function() {
                  if(this.readyState == 4 && this.status == 200) {
@@ -137,8 +137,8 @@
          }
 
          function delD2Entry() {
-           var EntryID = document.getElementById("sendEntryID").value
-           var AuthCode = document.getElementById("sendAuthCode").value
+           var EntryID = document.getElementById("sendD2EntryID").value
+           var AuthCode = document.getElementById("sendD2AuthCode").value
          var xhttp = new XMLHttpRequest();
              xhttp.onreadystatechange = function() {
                  if(this.readyState == 4 && this.status == 200) {
@@ -269,6 +269,12 @@
 
 
       </script>
+
+      <style>
+#CoDStats { display: none;}
+#D2Stats { display: none;}
+
+</style>
    </head>
    <body onload="hide()">
      <div id="StatsPages">
@@ -289,10 +295,10 @@
         <div class="row">
            <div class="col">
               <form>
-                 <input type="text" class="form-control" id="sendPlayerID" name="sendPlayerID" placeholder="Player ID">
+                 <input type="text" class="form-control" id="sendCoDPlayerID" name="sendPlayerID" placeholder="Player ID">
            </div>
            <div class="col">
-           <select class="custom-select mb-3" id="sendMapID" name="sendMapID">
+           <select class="custom-select mb-3" id="sendCoDMapID" name="sendCoDMapID">
            <option selected>Select Map</option>
            <option value="Containers">Containers</option>
            <option value="Village">Village</option>
@@ -300,7 +306,7 @@
            </select>
            </div>
            <div class="col">
-           <select class="custom-select mb-3" id="sendGameModeID" name="sendGameModeID">
+           <select class="custom-select mb-3" id="sendCoDGameModeID" name="sendCoDGameModeID">
            <option selected>Select Gamemode</option>
            <option value="Team Death Match">Team Death Match</option>
            <option value="Free For All">Free For All</option>
@@ -308,16 +314,16 @@
            </select>
            </div>
            <div class="col">
-           <input type="text" class="form-control" id="sendKills" name="sendKills" placeholder="Number of Kill">
+           <input type="text" class="form-control" id="sendCoDKills" name="sendCoDKills" placeholder="Number of Kill">
            </div>
            <div class="col">
-           <input type="text" class="form-control" id="sendDeaths" name="sendDeaths" placeholder="Number of Deaths">
+           <input type="text" class="form-control" id="sendCoDDeaths" name="sendCoDDeaths" placeholder="Number of Deaths">
            </div>
            <div class="col">
-           <input type="text" class="form-control" id="sendAssists" name="sendAssists" placeholder="Number of Assists">
+           <input type="text" class="form-control" id="sendCoDAssists" name="sendCoDAssists" placeholder="Number of Assists">
            </div>
            <div class="col">
-           <input type="text" class="form-control" id="sendAccuracy" name="sendAccuracy" placeholder="Accuracy">
+           <input type="text" class="form-control" id="sendCoDAccuracy" name="sendCoDAccuracy" placeholder="Accuracy">
            </div>
            <div class="col">
            <button type="button" class="btn btn-primary" id="hashButton" onclick="sendCoDStats()">Submit</button>
@@ -385,15 +391,15 @@
       <div class="row">
          <div class="col">
             <form>
-               <input type="text" class="form-control" id="sendD2PlayerID" name="sendPlayerID" placeholder="Player ID">
+               <input type="text" class="form-control" id="sendD2PlayerID" name="sendD2PlayerID" placeholder="Player ID">
          </div>
          <div class="col">
-         <select class="custom-select mb-3" id="sendD2MapID" name="sendMapID">
+         <select class="custom-select mb-3" id="sendD2MapID" name="sendD2MapID">
          <option selected>Select Map</option>
-         <option value="Containers">Kell's Grave</option>
-         <option value="Village">Legion's Folly</option>
-         <option value="Ocean Vila">Cathedral of Scars</option>
-         <option value="Ocean Vila">Emerald Coast</option>
+         <option value="Kell's Grave">Kell's Grave</option>
+         <option value="Legion's Folly">Legion's Folly</option>
+         <option value="Cathedral of Scars">Cathedral of Scars</option>
+         <option value="Emerald Coast">Emerald Coast</option>
          </select>
          </div>
          <div class="col">
@@ -423,10 +429,10 @@
       <div class="row">
          <div class="col">
             <form>
-               <input type="text" class="form-control" id="sendEntryID" name="sendEntryID" placeholder="Entry ID">
+               <input type="text" class="form-control" id="sendD2EntryID" name="sendD2EntryID" placeholder="Entry ID">
          </div>
          <div class="col">
-         <input type="text" class="form-control" id="sendAuthCode" name="sendAuthCode" placeholder="Authorization Code">
+         <input type="text" class="form-control" id="sendD2AuthCode" name="sendD2AuthCode" placeholder="Authorization Code">
          </div>
          <div class="col">
          <button type="button" class="btn btn-primary" id="hashButton" onclick="delD2Entry()">Submit</button>

@@ -35,6 +35,8 @@ def after_request(response):
 
 @restServer.route("/")
 def test():
+    cursor.execute("ALTER TABLE `CoD`  AUTO_INCREMENT = 0")
+    conn.commit()
     return "Hello"
 
 
