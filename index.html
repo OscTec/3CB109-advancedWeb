@@ -129,6 +129,63 @@
               cell7.innerHTML = acc;
             }
 
+            function compareCoDStats() {
+            var p1ID = document.getElementById("getCoDP1").value;
+            var p2ID = document.getElementById("getCoDP2").value;
+            getCoDAvgStats(p1ID);
+            wait(1000);
+            getCoDAvgStats(p2ID);
+            wait(1000);
+            }
+
+            function addComCoDRow(pID, mDepo, hosDe, guardDe, mLost, priHeal) {
+              var table = document.getElementById("comTableD2");
+              var row = table.insertRow(-1);
+              var cell0 = row.insertCell(0);
+              var cell1 = row.insertCell(1);
+              var cell2 = row.insertCell(2);
+              var cell3 = row.insertCell(3);
+              var cell4 = row.insertCell(4);
+              var cell5 = row.insertCell(4);
+
+              cell0.innerHTML = pID;
+              cell1.innerHTML = mDepo;
+              cell2.innerHTML = hosDe;
+              cell3.innerHTML = guardDe;
+              cell4.innerHTML = mLost;
+              cell5.innerHTML = priHeal;
+            }
+
+            function getCoDAvgStats(playerID) {
+              var pCounter = 0;
+              var pKills = 0;
+              var pDeaths = 0;
+              var pAssists = 0;
+              var pAccuracy = 0;
+
+              var xhttp = new XMLHttpRequest();
+                  xhttp.onreadystatechange = function() {
+                      if(this.readyState == 4 && this.status == 200) {
+                          data = JSON.parse(this.response);
+                          for (i = 0; i < data.results.length; i++) {
+
+                            pKills += parseInt(data.results[i].kills);
+                            pDeaths += parseInt(data.results[i].deaths);
+                            pAssists += parseInt(data.results[i].assists);
+                            pAccuracy += parseInt(data.results[i].accuracy);
+                            pCounter++;
+                          }
+                          addComCoDRow(playerID, pKills/pCounter, pDeaths/pCounter, pAssists/pCounter, pAccuracy/pCounter)
+                          } else {
+                              console.log('error ' + this.status);
+                          }
+                      }
+                      xhttp.open("GET", server + "getCoD/" + playerID, true);
+                  xhttp.send();
+            }
+
+
+
             function sendD2Stats() {
               var playerID = document.getElementById("sendD2PlayerID").value
               var mapID = document.getElementById("sendD2MapID").value
@@ -227,21 +284,10 @@
             function compareD2Stats() {
             var p1ID = document.getElementById("getD2P1").value;
             var p2ID = document.getElementById("getD2P2").value;
-            //var p1;
-            //var p2;
-            //p1 = getD2AvgStats(12);
-            //p2 = getD2AvgStats(13);
-            //getD2AvgStats(12)
             getD2AvgStats(p1ID);
-            //console.log(p1);
-            wait(1000); //http://www.endmemo.com/js/pause.php
+            wait(1000);
             getD2AvgStats(p2ID);
-            //console.log(p2);
-            wait(1000); //http://www.endmemo.com/js/pause.php
-
-            //addComD2Row(p1ID ,p1[0], p1[1], p1[2], p1[3], p1[4]);
-            //addComD2Row(p2ID, p2[0], p2[1], p2[2], p2[3], p2[4]);
-            //console.log(p2);
+            wait(1000);
             }
 
             function addComD2Row(pID, mDepo, hosDe, guardDe, mLost, priHeal) {
@@ -282,10 +328,7 @@
                             pPrimevalHealed += parseInt(data.results[i].PrimevalHealed);
                             pCounter++;
                           }
-                          //var data = new Array(pMotesDeposited/pCounter, pHostilesDefeated/pCounter, pGuardiansDefeated/pCounter, pMotesLost/pCounter, pPrimevalHealed/pCounter)
                           addComD2Row(playerID, pMotesDeposited/pCounter, pHostilesDefeated/pCounter, pGuardiansDefeated/pCounter, pMotesLost/pCounter, pPrimevalHealed/pCounter)
-                          //return "Done";
-                          //console.log(data);
                           } else {
                               console.log('error ' + this.status);
                           }
@@ -294,7 +337,7 @@
                   xhttp.send();
             }
 
-            function wait(ms)
+            function wait(ms)  //Function acquired from http://www.endmemo.com/js/pause.php
             {
               var d = new Date();
               var d2 = null;
@@ -470,6 +513,34 @@
             </div>
             <br>
          </div>
+
+         <h2>Compare CoD player stats using Player ID</h2>
+         <div class="row">
+            <div class="col">
+               <form>
+                  <input type="text" class="form-control" id="getCoDP1" name="getCoDP1" placeholder="Player 1">
+            </div>
+            <div class="col">
+            <input type="text" class="form-control" id="getCoDP2" name="getCoDP2" placeholder="Player 2">
+            </div>
+            <div class="col">
+            <button type="button" class="btn btn-primary" id="hashButton" onclick="compareCoDStats()">Submit</button>
+            </div>
+            </form>
+         </div>
+         <div class="container">
+            <h2>CoD Stats</h2>
+            <table id="comTableD2" class="table table-hover">
+               <tr>
+                  <td>Player ID</td>
+                  <td>Kills</td>
+                  <td>Deaths</td>
+                  <td>Assists</td>
+                  <td>Accuracy</td>
+               </tr>
+            </table>
+         </div>
+
          <!-- Destiny 2 Forms -->
          <div id="D2Stats">
             <h2>Submit Destiny 2 Stats</h2>

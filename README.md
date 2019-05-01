@@ -76,7 +76,7 @@ Advanced features:
 
 
 Giving Credit:
-JavaScript wait function http://www.endmemo.com/js/pause.php
+JavaScript wait() acquired from http://www.endmemo.com/js/pause.php
 
 Moodle hand in requires:
 server.py
