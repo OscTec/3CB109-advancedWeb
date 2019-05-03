@@ -343,6 +343,123 @@
                   xhttp.send();
             }
 
+
+
+
+            function compareGames() {
+              var SteamID1 = document.getElementById("getFGP1").value;
+              var SteamID2 = document.getElementById("getFGP2").value;
+              var ID1Games;
+              var ID2Games;
+              //idtest = pData.response.games[0].appid;
+
+              $.get(server + "getSteamGames/" + SteamID1, function(data, status){
+                var pData = JSON.parse(data);
+                ID1Games = pData;
+                //console.log(ID1Games);
+                $.get(server + "getSteamGames/" + SteamID2, function(data, status){
+                  var pData = JSON.parse(data);
+                  ID2Games = pData;
+                  //console.log(ID2Games.response.games.length);
+                  console.log(compareArrays(ID1Games, ID2Games));
+                });
+              });
+            }
+
+
+
+
+            function compareArrays(ID1Games, ID2Games) {
+              var matchedGames = [];
+              for (i = 0; i < ID1Games.response.games.length; i++) {
+                var gameID1 = ID1Games.response.games[i].appid;
+                //console.log(gameID1);
+                for (j = 0; j < ID2Games.response.games.length; j++) {
+                  var gameID2 = ID2Games.response.games[j].appid;
+                  //console.log(gameID2);
+                  if(gameID1 == gameID2) {
+                    matchedGames.push(gameID1);
+                    //addMatchGames(gameID1);
+                    findGameName(gameID1);
+                  }
+                }
+              }
+              return matchedGames;
+            }
+
+            function findGameName(gameID) {
+              $.get(server + "getSteamGameDes/" + gameID, function(data, status){
+                var pData = JSON.parse(data);
+                if(pData.game.gameName == null) {
+
+                }
+                 else {
+                  addMatchGame(pData.game.gameName);
+                }
+
+
+
+
+                //var pData = JSON.parse(data);
+                //ID2Games = pData;
+              });
+            }
+            /*()
+            if (pData.game.gameName == "ValveTestApp*") {
+
+            }
+            */
+            function addMatchGame(gameName) {
+
+                var table = document.getElementById("matchGameTable");
+                var row = table.insertRow(-1);
+                var cell0 = row.insertCell(0);
+
+                cell0.innerHTML = gameName;
+
+
+            }
+
+
+            function findGames(SteamID){
+              $.get(server + "getSteamGames/" + SteamID, function(data, status){
+                console.log(data);
+                return data;
+              });
+            };
+
+            function findFriends(){
+              var steamID = document.getElementById("getSteamID").value;
+              $.get(server + "getSteamFriends/" + steamID, function(data, status){
+                var pData = JSON.parse(data);
+                console.log(pData.friendslist.friends[0]);
+                for (i = 0; i < pData.friendslist.friends.length; i++) {
+                  $.get(server + "getSteamProfile/" + pData.friendslist.friends[i].steamid, function(data, status){
+                    var aData = JSON.parse(data);
+                    addFriendRow(aData.response.players[0].personaname, aData.response.players[0].steamid);
+                  });
+                }
+              });
+            }
+
+            function addFriendRow(steamName, steamID) {
+              var table = document.getElementById("friendsTable");
+              var row = table.insertRow(-1);
+              var cell0 = row.insertCell(0);
+              var cell1 = row.insertCell(1);
+
+              cell0.innerHTML = steamName;
+              cell1.innerHTML = steamID;
+
+            }
+
+
+
+
+
+
+
+
             function wait(ms)  //Function acquired from http://www.endmemo.com/js/pause.php
             {
               var d = new Date();
@@ -350,6 +467,8 @@
               do { d2 = new Date(); }
               while(d2-d < ms);
             }
+
+
 
 
 
@@ -395,6 +514,18 @@
                 D2Page.style.display = "none";
               }
             }
+
+            function getFindGamePage() {
+             var FindGamePage = document.getElementById("FindGamePage");
+              if (FindGamePage.style.display === "none") {
+                activePage.style.display = "none";
+                activePage = document.getElementById("FindGamePage");
+                FindGamePage.style.display = "block";
+              } else {
+                FindGamePage.style.display = "none";
+              }
+            }
+
             //Used to hide the divs at the on page load
             function hide() {
               //getD2Page()
@@ -403,7 +534,11 @@
               D2Page.style.display = "none";
               var CoDPage = document.getElementById("CoDStats");
               CoDPage.style.display = "none";
+              var FingGamePage = document.getElementById("FindGamePage");
+              FingGamePage.style.display = "none";
               activePage = document.getElementById("HomePage");
+
+
             }
 
 
@@ -414,6 +549,7 @@
       <style>
          #CoDStats { display: none;}
          #D2Stats { display: none;}
+         #FindGamePage { display: none;}
       </style>
    </head>
    <body onload="hide()">
@@ -423,7 +559,7 @@
             <div class="col"><button type="button" class="btn btn-dark" onclick="getHomePage()">Home</button></div>
             <div class="col"><button type="button" class="btn btn-danger" onclick="getCoDPage()">CoD BLOPS 4</button></div>
             <div class="col"><button type="button" class="btn btn-dark" onclick="getD2Page()">Destiny 2</button></div>
-            <div class="col"><button type="button" class="btn btn-dark" onclick="getCompareStatsPage()">Compare Stats</button></div>
+            <!--<div class="col"><button type="button" class="btn btn-dark" onclick="getCompareStatsPage()">Compare Stats</button></div>-->
             <div class="col"><button type="button" class="btn btn-dark" onclick="getFindGamePage()">Find Game</button></div>
          </div>
          <div id="HomePage">
@@ -667,6 +803,62 @@
             </div>
 
          </div>
+
+        <div id="FindGamePage">
+
+          <div class="row">
+             <div class="col">
+                <form>
+                   <input type="text" class="form-control" id="getSteamID" name="getSteamID" placeholder="Steam">
+             </div>
+             <div class="col">
+             <button type="button" class="btn btn-primary" id="hashButton" onclick="findFriends()">Search</button>
+             <!--<button type="button" class="btn btn-primary" id="compareGames">Search</button>-->
+             </div>
+             </form>
+          </div>
+          <div class="container">
+             <h2>Friends List</h2>
+             <table id="friendsTable" class="table table-hover">
+                <tr>
+                  <td>Steam Name</td>
+                  <td>Steam ID</td>
+                </tr>
+             </table>
+          </div>
+
+          <h2>Enter 2 Steam IDs to get a list of multiplayer games both have</h2>
+          <h3>76561198058093131, 76561197983520575</h3>
+          <div class="row">
+             <div class="col">
+                <form>
+                   <input type="text" class="form-control" id="getFGP1" name="getFGP1" placeholder="Steam ID 1">
+             </div>
+             <div class="col">
+             <input type="text" class="form-control" id="getFGP2" name="getFGP2" placeholder="Steam ID 2">
+             </div>
+             <div class="col">
+             <button type="button" class="btn btn-primary" id="hashButton" onclick="compareGames()">Search</button>
+             <!--<button type="button" class="btn btn-primary" id="compareGames">Search</button>-->
+             </div>
+             </form>
+          </div>
+
+
+          <div class="container">
+             <h2>Matching Games</h2>
+             <table id="matchGameTable" class="table table-hover">
+                <tr>
+                   <!--<td>Game Name</td>-->
+                </tr>
+             </table>
+          </div>
+
+
+        </div>
+
+
+
       </div>
       </div>
    </body>

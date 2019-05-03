@@ -164,6 +164,25 @@ def getSteamGameDes(gameID):
     else:
         return "Fail"
 
+#Call with id of a steam game and it will return all details about it using Steam API
+@restServer.route("/getSteamFriends/<steamID>", methods=['GET'])
+def getSteamFriends(steamID):
+    api_url = 'http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=' + SteamKey + '&steamid=' + steamID + '&relationship=friend'
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        return (response.content)
+    else:
+        return "Fail"
+
+#Call with id of a steam game and it will return all details about it using Steam API
+@restServer.route("/getSteamProfile/<steamID>", methods=['GET'])
+def getSteamProfile(steamID):
+    api_url = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + SteamKey + '&steamids=' + steamID
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        return (response.content)
+    else:
+        return "Fail"
 
 
 
