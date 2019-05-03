@@ -17,7 +17,7 @@ sudo apt-get install pip
 pip install flask
 pip install flask-mysql
 pip install -U flask-cors
-Pip install requests
+pip install requests
 
 Database Username: oscar.reid
 Database Password: 6wfCwA7O

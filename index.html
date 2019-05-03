@@ -10,8 +10,8 @@
       <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
       <script>
          //Server web address
-            //var url = "http://cs2s.yorkdc.net"
-            var url = "http://osctec.co.uk"
+            var url = "http://cs2s.yorkdc.net"
+            //var url = "http://osctec.co.uk"
             //Server port number
             var port = ":5011"
             //Combining Address and port number with / to create first part of API request
@@ -132,31 +132,32 @@
             function compareCoDStats() {
             var p1ID = document.getElementById("getCoDP1").value;
             var p2ID = document.getElementById("getCoDP2").value;
-            getCoDAvgStats(p1ID);
+            var gameMode = document.getElementById("getCoDGameMode").value;
+            getCoDAvgStats(p1ID, gameMode);
             wait(1000);
-            getCoDAvgStats(p2ID);
+            getCoDAvgStats(p2ID, gameMode);
             wait(1000);
             }
 
-            function addComCoDRow(pID, mDepo, hosDe, guardDe, mLost, priHeal) {
-              var table = document.getElementById("comTableD2");
+            function addComCoDRow(pID, pKills, pDeaths, pAssists, pAccuracy) {
+              var table = document.getElementById("comTableCoD");
+
               var row = table.insertRow(-1);
               var cell0 = row.insertCell(0);
               var cell1 = row.insertCell(1);
               var cell2 = row.insertCell(2);
               var cell3 = row.insertCell(3);
               var cell4 = row.insertCell(4);
-              var cell5 = row.insertCell(4);
+
 
               cell0.innerHTML = pID;
-              cell1.innerHTML = mDepo;
-              cell2.innerHTML = hosDe;
-              cell3.innerHTML = guardDe;
-              cell4.innerHTML = mLost;
-              cell5.innerHTML = priHeal;
+              cell1.innerHTML = pKills;
+              cell2.innerHTML = pDeaths;
+              cell3.innerHTML = pAssists;
+              cell4.innerHTML = pAccuracy;
             }
 
-            function getCoDAvgStats(playerID) {
+            function getCoDAvgStats(playerID, gameMode) {
               var pCounter = 0;
               var pKills = 0;
               var pDeaths = 0;
@@ -180,7 +181,12 @@
                               console.log('error ' + this.status);
                           }
                       }
-                      xhttp.open("GET", server + "getCoD/" + playerID, true);
+
+                      if(gameMode == ""){
+                        xhttp.open("GET", server + "getCoD/" + playerID, true);
+                      } else {
+                        xhttp.open("GET", server + "getCoD/" + playerID + "/" + gameMode, true);
+                      }
                   xhttp.send();
             }
 
@@ -389,7 +395,7 @@
                 D2Page.style.display = "none";
               }
             }
-
+            //Used to hide the divs at the on page load
             function hide() {
               //getD2Page()
               //getCoDPage()
@@ -512,34 +518,43 @@
                </table>
             </div>
             <br>
+            <h2>Compare CoD player stats using Player ID</h2>
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="getCoDP1" name="getCoDP1" placeholder="Player 1">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="getCoDP2" name="getCoDP2" placeholder="Player 2">
+               </div>
+               <div class="col">
+               <select class="custom-select mb-3" id="getCoDGameMode" name="getCoDGameMode">
+               <option selected>Select Gamemode</option>
+               <option value="Team Death Match">Team Death Match</option>
+               <option value="Free For All">Free For All</option>
+               <option value="Infected">Infected</option>
+               </select>
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="compareCoDStats()">Submit</button>
+               </div>
+               </form>
+            </div>
+            <div class="container">
+               <h2>CoD Stats</h2>
+               <table id="comTableCoD" class="table table-hover">
+                  <tr>
+                     <td>Player ID</td>
+                     <td>Kills</td>
+                     <td>Deaths</td>
+                     <td>Assists</td>
+                     <td>Accuracy</td>
+                  </tr>
+               </table>
+            </div>
          </div>
 
-         <h2>Compare CoD player stats using Player ID</h2>
-         <div class="row">
-            <div class="col">
-               <form>
-                  <input type="text" class="form-control" id="getCoDP1" name="getCoDP1" placeholder="Player 1">
-            </div>
-            <div class="col">
-            <input type="text" class="form-control" id="getCoDP2" name="getCoDP2" placeholder="Player 2">
-            </div>
-            <div class="col">
-            <button type="button" class="btn btn-primary" id="hashButton" onclick="compareCoDStats()">Submit</button>
-            </div>
-            </form>
-         </div>
-         <div class="container">
-            <h2>CoD Stats</h2>
-            <table id="comTableD2" class="table table-hover">
-               <tr>
-                  <td>Player ID</td>
-                  <td>Kills</td>
-                  <td>Deaths</td>
-                  <td>Assists</td>
-                  <td>Accuracy</td>
-               </tr>
-            </table>
-         </div>
+
 
          <!-- Destiny 2 Forms -->
          <div id="D2Stats">
