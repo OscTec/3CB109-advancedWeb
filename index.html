@@ -392,8 +392,10 @@
                 var pData = JSON.parse(data);
                 if(pData.game.gameName == null) {
 
+                } else if(/ValveTestApp/.test(pData.game.gameName)) {
+
                 }
-                 else {
+                else {
                   addMatchGame(pData.game.gameName);
                 }
 
@@ -410,14 +412,10 @@
             }
             */
             function addMatchGame(gameName) {
-
                 var table = document.getElementById("matchGameTable");
                 var row = table.insertRow(-1);
                 var cell0 = row.insertCell(0);
-
                 cell0.innerHTML = gameName;
-
-
             }
 
 
