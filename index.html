@@ -11,7 +11,6 @@
       <script>
          //Server web address
             var url = "http://cs2s.yorkdc.net"
-            //var url = "http://osctec.co.uk"
             //Server port number
             var port = ":5011"
             //Combining Address and port number with / to create first part of API request
@@ -31,82 +30,77 @@
               var deaths = document.getElementById("sendCoDDeaths").value
               var assists = document.getElementById("sendCoDAssists").value
               var accuracy = document.getElementById("sendCoDAccuracy").value
-
-            var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200) {
-                        console.log('success');
-                        } else {
-                            console.log('error ' + this.status);
-                        }
-                    }
-                    //API address with values from field added to it
-                xhttp.open("GET", server + "sendCoD/" + playerID + "/" + mapID + "/" + gameModeID + "/" + kills + "/" + deaths + "/" + assists + "/" + accuracy, true);
-                xhttp.send();
+              //jQuery the server with all the values from the form
+              $.get(server + "sendCoD/" + playerID + "/" + mapID + "/" + gameModeID + "/" + kills + "/" + deaths + "/" + assists + "/" + accuracy, function(data, status){
+                //Checks if the request worked
+                if (status == "success") {
+                  console.log("Success");
+                } else {
+                  console.log("Fail");
+                }
+              })
             }
 
             //Delete from CoD using EntryID and AuthCode
+            //Uses POST due to there being a authorisation code needed
             function delCoDEntry() {
               var EntryID = document.getElementById("sendCoDEntryID").value
               var AuthCode = document.getElementById("sendCoDAuthCode").value
-            var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200) {
-                        console.log('success');
-                        //document.getElementById("delText").innerHTML = "Entry " + EntryID + " Deleted";
-                        document.getElementById("delText").innerHTML = this.response;
-                        } else {
-                            console.log('error ' + this.status);
-                        }
-                    }
-                    //Delete CoD stat API address with EntryID and Authorisation caode attached
-                xhttp.open("POST", server + "delCoD/" + EntryID + "/" + AuthCode, true);
-                xhttp.send();
+              $.post(server + "delCoD/" + EntryID + "/" + AuthCode, function(data, status){
+                if(status == "success") {
+                  document.getElementById("CoDdelText").innerHTML = "Entry " + EntryID + " Deleted";
+                } else {
+                  document.getElementById("CoDdelText").innerHTML = "Failed to Delete Entry " + EntryID;
+                  console.log('error ' + status);
+                }
+              })
             }
 
-            //Used to find CoD games for one player
+            //Used to find CoD games for all players or just one player
             function getCoDStatsByID() {
             var playerID = document.getElementById("getByCoDPlayerID").value;
-            var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200) {
-                      //Parse the returned JSON data
-                        data = JSON.parse(this.response);
-                        var Parent = document.getElementById("statsTableCoD");
-                        while(Parent.hasChildNodes())
-                        {
-                          Parent.removeChild(Parent.firstChild);
-                        }
-                        //Takes value from the JSON data
-                        for (i = 0; i < data.results.length; i++) {
-                          var eID = data.results[i].entryID;
-                          var pID = data.results[i].playerID;
-                          var mID = data.results[i].mapID;
-                          var gID = data.results[i].gameModeID;
-                          var kills = data.results[i].kills;
-                          var deaths = data.results[i].deaths;
-                          var assists = data.results[i].assists;
-                          var accuracy = data.results[i].accuracy;
-                          //Send values to method to add rows to the stat table
-                          addCoDRow(eID, pID, mID, gID, kills, deaths, assists, accuracy);
-                        }
-                        console.log('success');
-                        } else {
-                            console.log('error ' + this.status);
-                        }
-                    }
-                    //Has two options for API calls one with a player ID and one
-                    //without depeding on if user provide a player id
-                    if(playerID == ""){
-                      xhttp.open("GET", server + "getCoD", true);
-                    } else {
-                      xhttp.open("GET", server + "getCoD/" + playerID, true);
-                    }
-
-                xhttp.send();
+            var Parent = document.getElementById("statsTableCoD");
+            //Removes all old results from table
+            while(Parent.hasChildNodes())
+            {
+              Parent.removeChild(Parent.firstChild);
             }
+            //This returns all games
+            if(playerID == ""){
+              $.get(server + "getCoD", function(data, status){
+                for (i = 0; i < data.results.length; i++) {
+                  var eID = data.results[i].entryID;
+                  var pID = data.results[i].playerID;
+                  var mID = data.results[i].mapID;
+                  var gID = data.results[i].gameModeID;
+                  var kills = data.results[i].kills;
+                  var deaths = data.results[i].deaths;
+                  var assists = data.results[i].assists;
+                  var accuracy = data.results[i].accuracy;
+                  //Send values to method to add rows to the stat table
+                  addCoDRow(eID, pID, mID, gID, kills, deaths, assists, accuracy);
+                }
+              })
+            //This returns games for just one player
+            } else {
+              $.get(server + "getCoD/" + playerID, function(data, status){
+                for (i = 0; i < data.results.length; i++) {
+                  var eID = data.results[i].entryID;
+                  var pID = data.results[i].playerID;
+                  var mID = data.results[i].mapID;
+                  var gID = data.results[i].gameModeID;
+                  var kills = data.results[i].kills;
+                  var deaths = data.results[i].deaths;
+                  var assists = data.results[i].assists;
+                  var accuracy = data.results[i].accuracy;
+                  //Send values to method to add rows to the stat table
+                  addCoDRow(eID, pID, mID, gID, kills, deaths, assists, accuracy);
+                }
+              })
+            }
+          }
 
-            //Used to add rows from JSON
+            //Used to add rows to CoD table
             function addCoDRow(eID, pID, mID, gID, kill, death, assist, acc) {
               var table = document.getElementById("statsTableCoD");
               var row = table.insertRow(-1);
@@ -129,16 +123,16 @@
               cell7.innerHTML = acc;
             }
 
+            //Gets values from compare CoD stats and calls methods to get 2 different players stats
             function compareCoDStats() {
             var p1ID = document.getElementById("getCoDP1").value;
             var p2ID = document.getElementById("getCoDP2").value;
             var gameMode = document.getElementById("getCoDGameMode").value;
             getCoDAvgStats(p1ID, gameMode);
-            wait(1000);
             getCoDAvgStats(p2ID, gameMode);
-            wait(1000);
             }
 
+            //Adds a row to the comparison table
             function addComCoDRow(pID, pKills, pDeaths, pAssists, pAccuracy) {
               var table = document.getElementById("comTableCoD");
 
@@ -149,7 +143,6 @@
               var cell3 = row.insertCell(3);
               var cell4 = row.insertCell(4);
 
-
               cell0.innerHTML = pID;
               cell1.innerHTML = pKills;
               cell2.innerHTML = pDeaths;
@@ -157,41 +150,44 @@
               cell4.innerHTML = pAccuracy;
             }
 
+            //Gets stats for a player and averages
             function getCoDAvgStats(playerID, gameMode) {
               var pCounter = 0;
               var pKills = 0;
               var pDeaths = 0;
               var pAssists = 0;
               var pAccuracy = 0;
-
-              var xhttp = new XMLHttpRequest();
-                  xhttp.onreadystatechange = function() {
-                      if(this.readyState == 4 && this.status == 200) {
-                          data = JSON.parse(this.response);
-                          for (i = 0; i < data.results.length; i++) {
-
-                            pKills += parseInt(data.results[i].kills);
-                            pDeaths += parseInt(data.results[i].deaths);
-                            pAssists += parseInt(data.results[i].assists);
-                            pAccuracy += parseInt(data.results[i].accuracy);
-                            pCounter++;
-                          }
-                          addComCoDRow(playerID, pKills/pCounter, pDeaths/pCounter, pAssists/pCounter, pAccuracy/pCounter)
-                          } else {
-                              console.log('error ' + this.status);
-                          }
-                      }
-
-                      if(gameMode == ""){
-                        xhttp.open("GET", server + "getCoD/" + playerID, true);
-                      } else {
-                        xhttp.open("GET", server + "getCoD/" + playerID + "/" + gameMode, true);
-                      }
-                  xhttp.send();
+              //Uses this if no gamemode is selected
+              if(gameMode == "Select Gamemode"){
+                $.get(server + "getCoD/" + playerID, function(data, status){
+                  for (i = 0; i < data.results.length; i++) {
+                    pKills += parseInt(data.results[i].kills);
+                    pDeaths += parseInt(data.results[i].deaths);
+                    pAssists += parseInt(data.results[i].assists);
+                    pAccuracy += parseInt(data.results[i].accuracy);
+                    pCounter++;
+                  }
+                  //Calls method that adds row
+                  addComCoDRow(playerID, pKills/pCounter, pDeaths/pCounter, pAssists/pCounter, pAccuracy/pCounter)
+                })
+              } else {
+                //Uses this if a game mode is selected
+                $.get(server + "getCoD/" + playerID + "/" + gameMode, function(data, status){
+                  for (i = 0; i < data.results.length; i++) {
+                    pKills += parseInt(data.results[i].kills);
+                    pDeaths += parseInt(data.results[i].deaths);
+                    pAssists += parseInt(data.results[i].assists);
+                    pAccuracy += parseInt(data.results[i].accuracy);
+                    pCounter++;
+                  }
+                  addComCoDRow(playerID, pKills/pCounter, pDeaths/pCounter, pAssists/pCounter, pAccuracy/pCounter)
+                })
+              }
             }
 
 
-
+            //Takes stats from submit field
+            //Sends them to the server to be stored
             function sendD2Stats() {
               var playerID = document.getElementById("sendD2PlayerID").value
               var mapID = document.getElementById("sendD2MapID").value
@@ -200,69 +196,74 @@
               var Guardiansdefeated = document.getElementById("sendGuardiansDefeated").value
               var MotesLost = document.getElementById("sendMotesLost").value
               var PrimevalHealed = document.getElementById("sendPrimevalHealed").value
-            var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200) {
-                        console.log('success');
-                        } else {
-                            console.log('error ' + this.status);
-                        }
-                    }
-                xhttp.open("GET", server + "sendD2/" + playerID + "/" + mapID + "/" + MotesDeposited + "/" + HostilesDefeated + "/" + Guardiansdefeated + "/" + MotesLost + "/" + PrimevalHealed, true);
-                xhttp.send();
+              $.get(server + "sendD2/" + playerID + "/" + mapID + "/" + MotesDeposited + "/" + HostilesDefeated + "/" + Guardiansdefeated + "/" + MotesLost + "/" + PrimevalHealed, function(data, status){
+                //Changes text depending on if it succeeded or not
+                if(status == "success") {
+                  document.getElementById("D2delText").innerHTML = "Entry Submitted";
+                } else {
+                  document.getElementById("D2delText").innerHTML = "Failed to Enter Entry ";
+                  console.log('error ' + status);
+                }
+              })
             }
 
+            //Takes values from Destiny 2 delete fields
+            //Uses those values to call server to delete from the database
             function delD2Entry() {
               var EntryID = document.getElementById("sendD2EntryID").value
               var AuthCode = document.getElementById("sendD2AuthCode").value
-            var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200) {
-                        console.log('success');
-                        document.getElementById("delText").innerHTML = "Entry " + EntryID + " Deleted";
-                        } else {
-                            console.log('error ' + this.status);
-                        }
-                    }
-                xhttp.open("POST", server + "delD2/" + EntryID + "/" + AuthCode, true);
-                xhttp.send();
+              console.log(EntryID);
+              console.log(AuthCode);
+              $.post(server + "delD2/" + EntryID + "/" + AuthCode, function(data, status){
+                //Displays message depending on if it was successful
+                if(status == "success") {
+                  document.getElementById("D2delText").innerHTML = "Entry " + EntryID + " Deleted";
+                } else {
+                  document.getElementById("D2delText").innerHTML = "Failed to Delete Entry " + EntryID;
+                  console.log('error ' + status);
+                }
+              })
             }
+
 
             function getD2StatsByID() {
             var playerID = document.getElementById("getByD2PlayerID").value;
-            var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200) {
-                        data = JSON.parse(this.response);
-                        var Parent = document.getElementById("statsTableD2");
-                        while(Parent.hasChildNodes())
-                        {
-                          Parent.removeChild(Parent.firstChild);
-                        }
-                        for (i = 0; i < data.results.length; i++) {
-                          var eID = data.results[i].EntryID;
-                          var pID = data.results[i].playerID;
-                          var mID = data.results[i].mapID;
-                          var mDepo = data.results[i].MotesDeposited;
-                          var hosDe = data.results[i].HostilesDefeated;
-                          var guardDe = data.results[i].GuardiansDefeated;
-                          var mLost = data.results[i].MotesLost;
-                          var priHeal = data.results[i].PrimevalHealed;
-                          addD2Row(eID, pID, mID, mDepo, hosDe, guardDe, mLost, priHeal);
-                        }
-                        console.log('success');
-                        } else {
-                            console.log('error ' + this.status);
-                        }
-                    }
-                    if(playerID == ""){
-                      xhttp.open("GET", server + "getD2", true);
-                    } else {
-                      xhttp.open("GET", server + "getD2/" + playerID, true);
-                    }
-
-                xhttp.send();
+            var Parent = document.getElementById("statsTableD2");
+            while(Parent.hasChildNodes())
+            {
+              Parent.removeChild(Parent.firstChild);
             }
+            if(playerID == ""){
+              $.get(server + "getD2", function(data, status){
+                for (i = 0; i < data.results.length; i++) {
+                  var eID = data.results[i].EntryID;
+                  var pID = data.results[i].playerID;
+                  var mID = data.results[i].mapID;
+                  var mDepo = data.results[i].MotesDeposited;
+                  var hosDe = data.results[i].HostilesDefeated;
+                  var guardDe = data.results[i].GuardiansDefeated;
+                  var mLost = data.results[i].MotesLost;
+                  var priHeal = data.results[i].PrimevalHealed;
+                  addD2Row(eID, pID, mID, mDepo, hosDe, guardDe, mLost, priHeal);
+                }
+              })
+            } else {
+              $.get(server + "getD2/" + playerID, function(data, status){
+                for (i = 0; i < data.results.length; i++) {
+                  var eID = data.results[i].EntryID;
+                  var pID = data.results[i].playerID;
+                  var mID = data.results[i].mapID;
+                  var mDepo = data.results[i].MotesDeposited;
+                  var hosDe = data.results[i].HostilesDefeated;
+                  var guardDe = data.results[i].GuardiansDefeated;
+                  var mLost = data.results[i].MotesLost;
+                  var priHeal = data.results[i].PrimevalHealed;
+                  addD2Row(eID, pID, mID, mDepo, hosDe, guardDe, mLost, priHeal);
+                }
+              })
+            }
+
+          }
 
 
             function addD2Row(eID, pID, mID, mDepo, hosDe, guardDe, mLost, priHeal) {
@@ -291,9 +292,9 @@
             var p1ID = document.getElementById("getD2P1").value;
             var p2ID = document.getElementById("getD2P2").value;
             getD2AvgStats(p1ID);
-            wait(1000);
+            //wait(1000);
             getD2AvgStats(p2ID);
-            wait(1000);
+            //wait(1000);
             }
 
             function addComD2Row(pID, mDepo, hosDe, guardDe, mLost, priHeal) {
@@ -322,30 +323,22 @@
               var pMotesLost = 0;
               var pPrimevalHealed = 0;
 
-              var xhttp = new XMLHttpRequest();
-                  xhttp.onreadystatechange = function() {
-                      if(this.readyState == 4 && this.status == 200) {
-                          data = JSON.parse(this.response);
-                          for (i = 0; i < data.results.length; i++) {
-                            pMotesDeposited += parseInt(data.results[i].MotesDeposited);
-                            pHostilesDefeated += parseInt(data.results[i].HostilesDefeated);
-                            pGuardiansDefeated += parseInt(data.results[i].GuardiansDefeated);
-                            pMotesLost += parseInt(data.results[i].MotesLost);
-                            pPrimevalHealed += parseInt(data.results[i].PrimevalHealed);
-                            pCounter++;
-                          }
-                          addComD2Row(playerID, pMotesDeposited/pCounter, pHostilesDefeated/pCounter, pGuardiansDefeated/pCounter, pMotesLost/pCounter, pPrimevalHealed/pCounter)
-                          } else {
-                              console.log('error ' + this.status);
-                          }
-                      }
-                      xhttp.open("GET", server + "getD2/" + playerID, true);
-                  xhttp.send();
-            }
+              $.get(server + "getD2/" + playerID, function(pData, status){
+                //pData = JSON.parse(data);
+                for (i = 0; i < pData.results.length; i++) {
+                  pMotesDeposited += parseInt(pData.results[i].MotesDeposited);
+                  pHostilesDefeated += parseInt(pData.results[i].HostilesDefeated);
+                  pGuardiansDefeated += parseInt(pData.results[i].GuardiansDefeated);
+                  pMotesLost += parseInt(pData.results[i].MotesLost);
+                  pPrimevalHealed += parseInt(pData.results[i].PrimevalHealed);
+                  pCounter++;
+                }
+                addComD2Row(playerID, pMotesDeposited/pCounter, pHostilesDefeated/pCounter, pGuardiansDefeated/pCounter, pMotesLost/pCounter, pPrimevalHealed/pCounter)
+              })
+              }
 
 
-
-
+              //Takes two steam IDs and finds games both users have
             function compareGames() {
               var SteamID1 = document.getElementById("getFGP1").value;
               var SteamID2 = document.getElementById("getFGP2").value;
@@ -368,7 +361,7 @@
 
 
 
-
+            //Compares two lists of games passed into it
             function compareArrays(ID1Games, ID2Games) {
               var matchedGames = [];
               for (i = 0; i < ID1Games.response.games.length; i++) {
@@ -390,27 +383,19 @@
             function findGameName(gameID) {
               $.get(server + "getSteamGameDes/" + gameID, function(data, status){
                 var pData = JSON.parse(data);
-                if(pData.game.gameName == null) {
+                if(pData.game.gameName == null) { //Strips out all null results from games that don't exist anymore
 
-                } else if(/ValveTestApp/.test(pData.game.gameName)) {
+
+                } else if(/ValveTestApp/.test(pData.game.gameName)) { //Strips out all results starting with ValueTestApp
 
                 }
                 else {
                   addMatchGame(pData.game.gameName);
                 }
 
-
-
-
-                //var pData = JSON.parse(data);
-                //ID2Games = pData;
               });
             }
-            /*()
-            if (pData.game.gameName == "ValveTestApp*") {
-
-            }
-            */
+            //Adds a game to the table
             function addMatchGame(gameName) {
                 var table = document.getElementById("matchGameTable");
                 var row = table.insertRow(-1);
@@ -418,7 +403,7 @@
                 cell0.innerHTML = gameName;
             }
 
-
+            //Returns a list of games belonging to a SteamID
             function findGames(SteamID){
               $.get(server + "getSteamGames/" + SteamID, function(data, status){
                 console.log(data);
@@ -426,6 +411,7 @@
               });
             };
 
+            //Takes a steamID from a input field and updates a table with all that IDs friends
             function findFriends(){
               var steamID = document.getElementById("getSteamID").value;
               $.get(server + "getSteamFriends/" + steamID, function(data, status){
@@ -440,6 +426,7 @@
               });
             }
 
+            //Adds a row to friends table with the Steam name and Steam ID
             function addFriendRow(steamName, steamID) {
               var table = document.getElementById("friendsTable");
               var row = table.insertRow(-1);
@@ -452,12 +439,6 @@
             }
 
 
-
-
-
-
-
-
             function wait(ms)  //Function acquired from http://www.endmemo.com/js/pause.php
             {
               var d = new Date();
@@ -467,19 +448,15 @@
             }
 
 
-
-
-
-
             //Pages
-            var activePage;
+            var activePage;//The current active div
 
             function setPages() {
               var D2Page = document.getElementById("D2Stats");
               var CoDPage = document.getElementById("CoDStats");
-
             }
 
+            //Hids all divs apart from the home div
             function getHomePage() {
               var CoDPage = document.getElementById("HomePage");
               if (CoDPage.style.display === "none") {
@@ -491,6 +468,7 @@
               }
             }
 
+            //Hids all divs apart from the CoD div
             function getCoDPage() {
               var CoDPage = document.getElementById("CoDStats");
               if (CoDPage.style.display === "none") {
@@ -502,6 +480,7 @@
               }
             }
 
+            //Hids all divs apart from the D2 div
             function getD2Page() {
              var D2Page = document.getElementById("D2Stats");
               if (D2Page.style.display === "none") {
@@ -513,6 +492,7 @@
               }
             }
 
+            //Hids all divs apart from the find games div
             function getFindGamePage() {
              var FindGamePage = document.getElementById("FindGamePage");
               if (FindGamePage.style.display === "none") {
@@ -536,7 +516,6 @@
               FingGamePage.style.display = "none";
               activePage = document.getElementById("HomePage");
 
-
             }
 
 
@@ -550,16 +529,35 @@
          #FindGamePage { display: none;}
       </style>
    </head>
-   <body onload="hide()">
-      <div id="StatsPages">
-        <!-- Nav Bar -->
-         <div class="row">
-            <div class="col"><button type="button" class="btn btn-dark" onclick="getHomePage()">Home</button></div>
-            <div class="col"><button type="button" class="btn btn-danger" onclick="getCoDPage()">CoD BLOPS 4</button></div>
-            <div class="col"><button type="button" class="btn btn-dark" onclick="getD2Page()">Destiny 2</button></div>
-            <!--<div class="col"><button type="button" class="btn btn-dark" onclick="getCompareStatsPage()">Compare Stats</button></div>-->
-            <div class="col"><button type="button" class="btn btn-dark" onclick="getFindGamePage()">Find Game</button></div>
-         </div>
+   <body onload="hide()"><!-- Hides all divs on page load -->
+      <div id="StatsPages"><!-- Nav Bar -->
+         <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top justify-content-center">
+            <ul class="navbar-nav">
+               <li class="nav-item">
+                  <a class="nav-link" onclick="getHomePage()">Home</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" onclick="getCoDPage()">CoD BLOPS 4</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" onclick="getD2Page()">Destiny 2</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" onclick="getFindGamePage()">Find Game</a>
+               </li>
+            </ul>
+         </nav>
+         <p>  <br /> </p>
+         <p>  <br /> </p>
+         <!-- Nav Bar -->
+         <!--
+            <div class="row">
+               <div class="col"><button type="button" class="btn btn-dark" onclick="getHomePage()">Home</button></div>
+               <div class="col"><button type="button" class="btn btn-danger" onclick="getCoDPage()">CoD BLOPS 4</button></div>
+               <div class="col"><button type="button" class="btn btn-dark" onclick="getD2Page()">Destiny 2</button></div>
+               <div class="col"><button type="button" class="btn btn-dark" onclick="getFindGamePage()">Find Game</button></div>
+            </div>
+            -->
          <div id="HomePage">
             <h2>Home Page</h2>
          </div>
@@ -606,6 +604,7 @@
                </form>
             </div>
             <p>  <br /> </p>
+            <!-- Delete stats input field for CoD -->
             <h2>Delete CoD stats using Entry ID</h2>
             <div class="row">
                <div class="col">
@@ -620,8 +619,9 @@
                </div>
                </form>
             </div>
-            <h2 id="delText"></h2>
+            <h2 id="CoDdelText"></h2>
             <p>  <br /> </p>
+            <!-- Search for CoD stats -->
             <h2>Search CoD stats using Player ID</h2>
             <div class="row">
                <div class="col">
@@ -634,8 +634,8 @@
                </form>
             </div>
             <p>  <br /> </p>
-            <!--Input form -->
-            <!--End Input form -->
+            <!-- Input form -->
+            <!-- Table of CoD stats -->
             <div class="container">
                <h2>CoD Stats</h2>
                <table id="statsTableCoD" class="table table-hover">
@@ -652,6 +652,7 @@
                </table>
             </div>
             <br>
+            <!-- Input Field for comparing CoD game stats for two players -->
             <h2>Compare CoD player stats using Player ID</h2>
             <div class="row">
                <div class="col">
@@ -674,6 +675,7 @@
                </div>
                </form>
             </div>
+            <!-- Comparison Table -->
             <div class="container">
                <h2>CoD Stats</h2>
                <table id="comTableCoD" class="table table-hover">
@@ -687,9 +689,6 @@
                </table>
             </div>
          </div>
-
-
-
          <!-- Destiny 2 Forms -->
          <div id="D2Stats">
             <h2>Submit Destiny 2 Stats</h2>
@@ -729,6 +728,7 @@
             </div>
             <p>  <br /> </p>
             <h2>Delete Destiny 2 stats using Entry ID</h2>
+            <h2 id="D2delText"></h2>
             <div class="row">
                <div class="col">
                   <form>
@@ -799,64 +799,53 @@
                   </tr>
                </table>
             </div>
-
          </div>
-
-        <div id="FindGamePage">
-
-          <div class="row">
-             <div class="col">
-                <form>
-                   <input type="text" class="form-control" id="getSteamID" name="getSteamID" placeholder="Steam">
-             </div>
-             <div class="col">
-             <button type="button" class="btn btn-primary" id="hashButton" onclick="findFriends()">Search</button>
-             <!--<button type="button" class="btn btn-primary" id="compareGames">Search</button>-->
-             </div>
-             </form>
-          </div>
-          <div class="container">
-             <h2>Friends List</h2>
-             <table id="friendsTable" class="table table-hover">
-                <tr>
-                  <td>Steam Name</td>
-                  <td>Steam ID</td>
-                </tr>
-             </table>
-          </div>
-
-          <h2>Enter 2 Steam IDs to get a list of multiplayer games both have</h2>
-          <h3>76561198058093131, 76561197983520575</h3>
-          <div class="row">
-             <div class="col">
-                <form>
-                   <input type="text" class="form-control" id="getFGP1" name="getFGP1" placeholder="Steam ID 1">
-             </div>
-             <div class="col">
-             <input type="text" class="form-control" id="getFGP2" name="getFGP2" placeholder="Steam ID 2">
-             </div>
-             <div class="col">
-             <button type="button" class="btn btn-primary" id="hashButton" onclick="compareGames()">Search</button>
-             <!--<button type="button" class="btn btn-primary" id="compareGames">Search</button>-->
-             </div>
-             </form>
-          </div>
-
-
-          <div class="container">
-             <h2>Matching Games</h2>
-             <table id="matchGameTable" class="table table-hover">
-                <tr>
-                   <!--<td>Game Name</td>-->
-                </tr>
-             </table>
-          </div>
-
-
-        </div>
-
-
-
+         <div id="FindGamePage">
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="getSteamID" name="getSteamID" placeholder="Steam">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="findFriends()">Search</button>
+               <!--<button type="button" class="btn btn-primary" id="compareGames">Search</button>-->
+               </div>
+               </form>
+            </div>
+            <div class="container">
+               <h2>Friends List</h2>
+               <table id="friendsTable" class="table table-hover">
+                  <tr>
+                     <td>Steam Name</td>
+                     <td>Steam ID</td>
+                  </tr>
+               </table>
+            </div>
+            <h2>Enter 2 Steam IDs to get a list of multiplayer games both have</h2>
+            <h3>76561198058093131, 76561197983520575</h3>
+            <div class="row">
+               <div class="col">
+                  <form>
+                     <input type="text" class="form-control" id="getFGP1" name="getFGP1" placeholder="Steam ID 1">
+               </div>
+               <div class="col">
+               <input type="text" class="form-control" id="getFGP2" name="getFGP2" placeholder="Steam ID 2">
+               </div>
+               <div class="col">
+               <button type="button" class="btn btn-primary" id="hashButton" onclick="compareGames()">Search</button>
+               <!--<button type="button" class="btn btn-primary" id="compareGames">Search</button>-->
+               </div>
+               </form>
+            </div>
+            <div class="container">
+               <h2>Matching Games</h2>
+               <table id="matchGameTable" class="table table-hover">
+                  <tr>
+                     <!--<td>Game Name</td>-->
+                  </tr>
+               </table>
+            </div>
+         </div>
       </div>
       </div>
    </body>
