@@ -3,10 +3,10 @@
    <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">//Using Bootstrap 4 for the CSS
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>//jQuery library
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>//ajax library
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>//Bootstrap 4 library
       <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
       <script>
          //Server web address
@@ -16,6 +16,7 @@
             //Combining Address and port number with / to create first part of API request
             var server = url + port + "/"
 
+            document.title = "Stat Master"//Changes the Title that appears in the tab
 
 
 
@@ -519,8 +520,6 @@
             }
 
 
-
-
       </script>
       <!--CSS to hide the different all divs but the main menu-->
       <style>
@@ -529,7 +528,7 @@
          #FindGamePage { display: none;}
       </style>
    </head>
-   <body onload="hide()"><!-- Hides all divs on page load -->
+   <body onload="hide()" class="bg-info text-white">><!-- Hides all divs on page load -->
       <div id="StatsPages"><!-- Nav Bar -->
          <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top justify-content-center">
             <ul class="navbar-nav">
@@ -548,7 +547,6 @@
             </ul>
          </nav>
          <p>  <br /> </p>
-         <p>  <br /> </p>
          <!-- Nav Bar -->
          <!--
             <div class="row">
@@ -559,11 +557,19 @@
             </div>
             -->
          <div id="HomePage">
-            <h2>Home Page</h2>
+
+              <div class="container">
+                <h1>Welcome to my site</h1>
+                <p>Here you store results from CoD Black Ops 4 matches and Destiny 2 Gambit matches</p>
+                <p>Or if you want to find a game that both you and a friend have on Steam you can also do that</p>
+                <p>Pick a option from the menu above to get started<p>
+              </div>
+
          </div>
          <!-- CoD Page -->
-         <div id="CoDStats">
+         <div id="CoDStats" class="container">
             <h2>Submit CoD Stats</h2>
+            <p>Input stats from a Call of Duty Black Ops 4 match for a particular player</p>
             <!-- Submit stats input fields -->
             <div class="row">
                <div class="col">
@@ -572,7 +578,7 @@
                </div>
                <div class="col">
                <select class="custom-select mb-3" id="sendCoDMapID" name="sendCoDMapID">
-               <option selected>Select Map</option>
+               <option selected>Map</option>
                <option value="Containers">Containers</option>
                <option value="Village">Village</option>
                <option value="Ocean Vila">Ocean Vila</option>
@@ -580,20 +586,20 @@
                </div>
                <div class="col">
                <select class="custom-select mb-3" id="sendCoDGameModeID" name="sendCoDGameModeID">
-               <option selected>Select Gamemode</option>
+               <option selected>Gamemode</option>
                <option value="Team Death Match">Team Death Match</option>
                <option value="Free For All">Free For All</option>
                <option value="Infected">Infected</option>
                </select>
                </div>
                <div class="col">
-               <input type="text" class="form-control" id="sendCoDKills" name="sendCoDKills" placeholder="Number of Kill">
+               <input type="text" class="form-control" id="sendCoDKills" name="sendCoDKills" placeholder="Kills">
                </div>
                <div class="col">
-               <input type="text" class="form-control" id="sendCoDDeaths" name="sendCoDDeaths" placeholder="Number of Deaths">
+               <input type="text" class="form-control" id="sendCoDDeaths" name="sendCoDDeaths" placeholder="Deaths">
                </div>
                <div class="col">
-               <input type="text" class="form-control" id="sendCoDAssists" name="sendCoDAssists" placeholder="Number of Assists">
+               <input type="text" class="form-control" id="sendCoDAssists" name="sendCoDAssists" placeholder="Assists">
                </div>
                <div class="col">
                <input type="text" class="form-control" id="sendCoDAccuracy" name="sendCoDAccuracy" placeholder="Accuracy">
@@ -601,18 +607,22 @@
                <div class="col">
                <button type="button" class="btn btn-primary" id="hashButton" onclick="sendCoDStats()">Submit</button>
                </div>
+
                </form>
             </div>
             <p>  <br /> </p>
             <!-- Delete stats input field for CoD -->
             <h2>Delete CoD stats using Entry ID</h2>
+            <p>Delete a match entry for using Entry ID and the authorisation code</p>
+            <p>FOR TESTING: Authorisation Code = 123</p>
+
             <div class="row">
                <div class="col">
                   <form>
                      <input type="text" class="form-control" id="sendCoDEntryID" name="sendCoDEntryID" placeholder="Entry ID">
                </div>
                <div class="col">
-               <input type="text" class="form-control" id="sendCoDAuthCode" name="sendCoDAuthCode" placeholder="Authorization Code">
+               <input type="text" class="form-control" id="sendCoDAuthCode" name="sendCoDAuthCode" placeholder="Authorisation Code">
                </div>
                <div class="col">
                <button type="button" class="btn btn-primary" id="hashButton" onclick="delCoDEntry()">Submit</button>
@@ -623,6 +633,8 @@
             <p>  <br /> </p>
             <!-- Search for CoD stats -->
             <h2>Search CoD stats using Player ID</h2>
+            <p>Enter a player ID to retrieve all their matches or leave blank to retrieve all matches</p>
+            <p>FOR TESTING: I set results for player ID 12 and 13</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -654,6 +666,9 @@
             <br>
             <!-- Input Field for comparing CoD game stats for two players -->
             <h2>Compare CoD player stats using Player ID</h2>
+            <p>Enter two player IDs to compare their average match results</p>
+            <p>FOR TESTING: I set results for players ID 12 and 13</p>
+            <p>FOR TESTING: You can create your own stats using the submit and use them for comparison if you want</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -690,8 +705,9 @@
             </div>
          </div>
          <!-- Destiny 2 Forms -->
-         <div id="D2Stats">
+         <div id="D2Stats" class="container">
             <h2>Submit Destiny 2 Stats</h2>
+            <p>Input stats from a Destiny 2 gambit match for a particular player</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -699,7 +715,7 @@
                </div>
                <div class="col">
                <select class="custom-select mb-3" id="sendD2MapID" name="sendD2MapID">
-               <option selected>Select Map</option>
+               <option selected>Map</option>
                <option value="Kell's Grave">Kell's Grave</option>
                <option value="Legion's Folly">Legion's Folly</option>
                <option value="Cathedral of Scars">Cathedral of Scars</option>
@@ -707,19 +723,19 @@
                </select>
                </div>
                <div class="col">
-               <input type="text" class="form-control" id="sendMotesDeposited" name="sendMotesDeposited" placeholder="Motes Deposited">
+               <input type="text" class="form-control" id="sendMotesDeposited" name="sendMotesDeposited" placeholder="Motes Bank">
                </div>
                <div class="col">
-               <input type="text" class="form-control" id="sendHostilesDefeated" name="sendHostilesDefeated" placeholder="Hostiles Defeated">
+               <input type="text" class="form-control" id="sendHostilesDefeated" name="sendHostilesDefeated" placeholder="Hostile Kills">
                </div>
                <div class="col">
-               <input type="text" class="form-control" id="sendGuardiansDefeated" name="sendGuardiansDefeated" placeholder="Guardians Defeated">
+               <input type="text" class="form-control" id="sendGuardiansDefeated" name="sendGuardiansDefeated" placeholder="Player Kills">
                </div>
                <div class="col">
                <input type="text" class="form-control" id="sendMotesLost" name="sendMotesLost" placeholder="Motes Lost">
                </div>
                <div class="col">
-               <input type="text" class="form-control" id="sendPrimevalHealed" name="sendPrimevalHealed" placeholder="Primeval Healed">
+               <input type="text" class="form-control" id="sendPrimevalHealed" name="sendPrimevalHealed" placeholder="Healed">
                </div>
                <div class="col">
                <button type="button" class="btn btn-primary" id="hashButton" onclick="sendD2Stats()">Submit</button>
@@ -728,6 +744,8 @@
             </div>
             <p>  <br /> </p>
             <h2>Delete Destiny 2 stats using Entry ID</h2>
+            <p>Delete a match entry for using Entry ID and the authorisation code</p>
+            <p>FOR TESTING: Authorisation Code = 123</p>
             <h2 id="D2delText"></h2>
             <div class="row">
                <div class="col">
@@ -745,6 +763,8 @@
             <h2 id="delText"></h2>
             <p>  <br /> </p>
             <h2>Search Destiny 2 stats using Player ID</h2>
+            <p>Enter a player ID to retrieve all their matches or leave blank to retrieve all matches</p>
+            <p>FOR TESTING: I set results for player ID 12 and 13</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -773,6 +793,8 @@
             </div>
             <br>
             <h2>Compare Destiny 2 player stats using Player ID</h2>
+            <p>FOR TESTING: I set results for players ID 12 and 13</p>
+            <p>FOR TESTING: You can create your own stats using the submit and use them for comparison if you want</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -787,7 +809,7 @@
                </form>
             </div>
             <div class="container">
-               <h2>CoD Stats</h2>
+               <h2>Destiny 2 Stats</h2>
                <table id="comTableD2" class="table table-hover">
                   <tr>
                      <td>Player ID</td>
@@ -800,11 +822,15 @@
                </table>
             </div>
          </div>
-         <div id="FindGamePage">
+         <!-- Find Games Page-->
+         <div id="FindGamePage" class="container">
+           <h2>Steam Friends</h2>
+           <p>Enter a Steam ID to retrieve a list of all their friends</p>
+           <p>FOR TESTING: You can use my Steam ID: 76561198058093131 but any Steam ID will work</p>
             <div class="row">
                <div class="col">
                   <form>
-                     <input type="text" class="form-control" id="getSteamID" name="getSteamID" placeholder="Steam">
+                     <input type="text" class="form-control" id="getSteamID" name="getSteamID" placeholder="Steam ID">
                </div>
                <div class="col">
                <button type="button" class="btn btn-primary" id="hashButton" onclick="findFriends()">Search</button>
@@ -821,8 +847,9 @@
                   </tr>
                </table>
             </div>
-            <h2>Enter 2 Steam IDs to get a list of multiplayer games both have</h2>
-            <h3>76561198058093131, 76561197983520575</h3>
+            <h2>Find matching games</h2>
+            <p>Enter 2 Steam IDs to get a list of games both IDs have</p>
+            <p>FOR TESTING: Use my Steam ID: 76561198058093131 and 76561197983520575 but any valid Steam IDs will work</p>
             <div class="row">
                <div class="col">
                   <form>
