@@ -3,8 +3,7 @@
    <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-      //Using Bootstrap 4 for the CSS
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">//Using Bootstrap 4 for the CSS
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>//jQuery library
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>//ajax library
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>//Bootstrap 4 library
@@ -160,9 +159,9 @@
             if(p1ID == "" || p2ID == "") {
               document.getElementById("ComCoDResult").innerHTML = "Please enter values";
               } else {
-              getCoDAvgStats(p1ID, p2ID, gameMode);
-              //wait(1000);
-              //getCoDAvgStats(p2ID, gameMode);
+              getCoDAvgStats(p1ID, gameMode);
+              wait(1000);
+              getCoDAvgStats(p2ID, gameMode);
               }
 
             }
@@ -193,18 +192,12 @@
             }
 
             //Gets stats for a player and averages
-            function getCoDAvgStats(playerID, playerID1, gameMode) {
+            function getCoDAvgStats(playerID, gameMode) {
               var pCounter = 0;
               var pKills = 0;
               var pDeaths = 0;
               var pAssists = 0;
               var pAccuracy = 0;
-
-              var p1Counter = 0;
-              var p1Kills = 0;
-              var p1Deaths = 0;
-              var p1Assists = 0;
-              var p1Accuracy = 0;
               //Uses this if no gamemode is selected
               if(gameMode == "Select Gamemode"){
                 $.get(server + "getCoD/" + playerID, function(data, status){
@@ -221,22 +214,6 @@
                   }
                   //Calls method that adds row
                   addComCoDRow(playerID, pKills/pCounter, pDeaths/pCounter, pAssists/pCounter, pAccuracy/pCounter)
-                  $.get(server + "getCoD/" + playerID1, function(data, status){
-                    //If the server found no results it will do display No results found
-                    if(data == "No results found"){
-                      document.getElementById("ComCoDResult").innerHTML = data;
-                    } else {
-                    for (i = 0; i < data.results.length; i++) {
-                      p1Kills += parseInt(data.results[i].kills);
-                      p1Deaths += parseInt(data.results[i].deaths);
-                      p1Assists += parseInt(data.results[i].assists);
-                      p1Accuracy += parseInt(data.results[i].accuracy);
-                      p1Counter++;
-                    }
-                    //Calls method that adds row
-                    addComCoDRow(playerID1, p1Kills/p1Counter, p1Deaths/p1Counter, p1Assists/p1Counter, p1Accuracy/p1Counter)
-                  }
-                  })
                 }
                 })
               } else {
@@ -254,21 +231,52 @@
                       pCounter++;
                     }
                     addComCoDRow(playerID, pKills/pCounter, pDeaths/pCounter, pAssists/pCounter, pAccuracy/pCounter)
-                    $.get(server + "getCoD/" + playerID1 + "/" + gameMode, function(data, status){
-                      //If the server found no results it will display No results found
-                      if(data == "No results found"){
-                        document.getElementById("ComCoDResult").innerHTML = data;
-                      } else {
-                        for (i = 0; i < data.results.length; i++) {
-                          p1Kills += parseInt(data.results[i].kills);
-                          p1Deaths += parseInt(data.results[i].deaths);
-                          p1Assists += parseInt(data.results[i].assists);
-                          p1Accuracy += parseInt(data.results[i].accuracy);
-                          p1Counter++;
-                        }
-                        addComCoDRow(playerID1, p1Kills/p1Counter, p1Deaths/p1Counter, p1Assists/p1Counter, p1Accuracy/p1Counter)
-                      }
-                    })
+                  }
+                })
+              }
+            }
+
+            //New anticrash method
+            //Gets stats for a player and averages
+            function getCoDAvgStats(playerID, playerID1, gameMode) {
+              var pCounter = 0;
+              var pKills = 0;
+              var pDeaths = 0;
+              var pAssists = 0;
+              var pAccuracy = 0;
+              //Uses this if no gamemode is selected
+              if(gameMode == "Select Gamemode"){
+                $.get(server + "getCoD/" + playerID, function(data, status){
+                  //If the server found no results it will do display No results found
+                  if(data == "No results found"){
+                    document.getElementById("ComCoDResult").innerHTML = data;
+                  } else {
+                  for (i = 0; i < data.results.length; i++) {
+                    pKills += parseInt(data.results[i].kills);
+                    pDeaths += parseInt(data.results[i].deaths);
+                    pAssists += parseInt(data.results[i].assists);
+                    pAccuracy += parseInt(data.results[i].accuracy);
+                    pCounter++;
+                  }
+                  //Calls method that adds row
+                  addComCoDRow(playerID, pKills/pCounter, pDeaths/pCounter, pAssists/pCounter, pAccuracy/pCounter)
+                }
+                })
+              } else {
+                //Uses this if a game mode is selected
+                $.get(server + "getCoD/" + playerID + "/" + gameMode, function(data, status){
+                  //If the server found no results it will display No results found
+                  if(data == "No results found"){
+                    document.getElementById("ComCoDResult").innerHTML = data;
+                  } else {
+                    for (i = 0; i < data.results.length; i++) {
+                      pKills += parseInt(data.results[i].kills);
+                      pDeaths += parseInt(data.results[i].deaths);
+                      pAssists += parseInt(data.results[i].assists);
+                      pAccuracy += parseInt(data.results[i].accuracy);
+                      pCounter++;
+                    }
+                    addComCoDRow(playerID, pKills/pCounter, pDeaths/pCounter, pAssists/pCounter, pAccuracy/pCounter)
                   }
                 })
               }
@@ -401,8 +409,8 @@
               //Displays message asking user to input values
               document.getElementById("ComD2Result").innerHTML = "Please enter values";
               } else {
-                getD2AvgStats(p1ID, p2ID);
-                //getD2AvgStats(p2ID);
+                getD2AvgStats(p1ID);
+                getD2AvgStats(p2ID);
               }
             }
 
@@ -424,20 +432,13 @@
               cell5.innerHTML = priHeal;
             }
 
-            function getD2AvgStats(playerID, playerID1) {
+            function getD2AvgStats(playerID) {
               var pCounter = 0;
               var pMotesDeposited = 0;
               var pHostilesDefeated = 0;
               var pGuardiansDefeated = 0;
               var pMotesLost = 0;
               var pPrimevalHealed = 0;
-
-              var p1Counter = 0;
-              var p1MotesDeposited = 0;
-              var p1HostilesDefeated = 0;
-              var p1GuardiansDefeated = 0;
-              var p1MotesLost = 0;
-              var p1PrimevalHealed = 0;
 
               $.get(server + "getD2/" + playerID, function(pData, status){
                 if(pData == "No results found"){
@@ -453,22 +454,6 @@
                   pCounter++;
                 }
                 addComD2Row(playerID, pMotesDeposited/pCounter, pHostilesDefeated/pCounter, pGuardiansDefeated/pCounter, pMotesLost/pCounter, pPrimevalHealed/pCounter)
-                $.get(server + "getD2/" + playerID1, function(pData, status){
-                  if(pData == "No results found"){
-                    document.getElementById("ComD2Result").innerHTML = pData;
-                  } else {
-                  //pData = JSON.parse(data);
-                  for (i = 0; i < pData.results.length; i++) {
-                    p1MotesDeposited += parseInt(pData.results[i].MotesDeposited);
-                    p1HostilesDefeated += parseInt(pData.results[i].HostilesDefeated);
-                    p1GuardiansDefeated += parseInt(pData.results[i].GuardiansDefeated);
-                    p1MotesLost += parseInt(pData.results[i].MotesLost);
-                    p1PrimevalHealed += parseInt(pData.results[i].PrimevalHealed);
-                    p1Counter++;
-                  }
-                  addComD2Row(playerID1, p1MotesDeposited/p1Counter, p1HostilesDefeated/p1Counter, p1GuardiansDefeated/p1Counter, p1MotesLost/p1Counter, p1PrimevalHealed/p1Counter)
-                }
-                })
               }
               })
               }
@@ -674,10 +659,8 @@
          #FindGamePage { display: none;}
       </style>
    </head>
-   <body onload="hide()" class="bg-info text-white">
-      ><!-- Hides all divs on page load -->
-      <div id="StatsPages">
-         <!-- Nav Bar -->
+   <body onload="hide()" class="bg-info text-white">><!-- Hides all divs on page load -->
+      <div id="StatsPages"><!-- Nav Bar -->
          <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top justify-content-center">
             <ul class="navbar-nav">
                <li class="nav-item">
@@ -705,14 +688,16 @@
             </div>
             -->
          <div id="HomePage">
-            <div class="container">
-               <h1>Welcome to my site</h1>
-               <p>Here you store results from CoD Black Ops 4 matches and Destiny 2 Gambit matches</p>
-               <p>Or if you want to find a game that both you and a friend have on Steam you can also do that</p>
-               <p>All forms verify the values inputted to check they are possible values</p>
-               <p>So no you can't input that you got 500 kills and 0 deaths in one game</p>
-               <p>Pick a option from the menu above to get started</p>
-            </div>
+
+              <div class="container">
+                <h1>Welcome to my site</h1>
+                <p>Here you store results from CoD Black Ops 4 matches and Destiny 2 Gambit matches</p>
+                <p>Or if you want to find a game that both you and a friend have on Steam you can also do that</p>
+                <p>All forms verify the values inputted to check they are possible values</p>
+                <p>So no you can't input that you got 500 kills and 0 deaths in one game</p>
+                <p>Pick a option from the menu above to get started</p>
+              </div>
+
          </div>
          <!-- CoD Page -->
          <div id="CoDStats" class="container">
@@ -763,6 +748,7 @@
             <h2>Delete CoD stats using Entry ID</h2>
             <p>Delete a match entry for using Entry ID and the authorisation code</p>
             <p>FOR TESTING: Authorisation Code = 123</p>
+
             <div class="row">
                <div class="col">
                   <form>
@@ -812,6 +798,7 @@
                </table>
                <table id="statsTableCoD" class="table table-hover">
                   <tr>
+
                   </tr>
                </table>
             </div>
@@ -980,9 +967,9 @@
          </div>
          <!-- Find Games Page-->
          <div id="FindGamePage" class="container">
-            <h2>Steam Friends</h2>
-            <p>Enter a Steam ID to retrieve a list of all their friends</p>
-            <p>FOR TESTING: You can use my Steam ID: 76561198058093131 but any Steam ID will work</p>
+           <h2>Steam Friends</h2>
+           <p>Enter a Steam ID to retrieve a list of all their friends</p>
+           <p>FOR TESTING: You can use my Steam ID: 76561198058093131 but any Steam ID will work</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -995,6 +982,7 @@
                </form>
             </div>
             <h2 id="FriendsSteam"></h2>
+
             <div class="container">
                <h2>Friends List</h2>
                <table id="friendsTable" class="table table-hover">

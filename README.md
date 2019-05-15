@@ -164,19 +164,16 @@ Game descriptions
 http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=' + SteamKey + '&appid=' + gameID
 
 
-Giving Credit:
-JavaScript wait() acquired from http://www.endmemo.com/js/pause.php
+Input and result validation:
+The Client checks that all input fields are filled before submitting a request to the server
+The server checks are inputs are correct such as the map is from the list of options
+Checks that the values submitted are possible within the game such as the max possible CoD Kills is 100 any value over will return Kills value is impossible and the range
+Before the server returns results from the database it checks that there are results in it
+If not it will return "No results found" which on the client side displays this result
+
 
 Moodle hand in requires:
 server.py
 index.html
 jquery-3.3.1.min.js
 README.md
-
-To Do List:
-Validate inputs
-Style front end
-
-Write up:
-Complete Guide written
-Reference all code from external sources in code and write up
