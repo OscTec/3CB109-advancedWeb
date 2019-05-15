@@ -5,13 +5,14 @@ import requests
 
 SteamKey = '21C5CFC0D481BE7C44CEBCAFCE909614'  # Pi SteamKey
 PortNumber = 5011  # Pi port number
-#HostURL = 'cs2s.yorkdc.net'
-SteamID = '76561198058093131'
+HostURL = 'cs2s.yorkdc.net' #URL of server
+#SteamID = '76561198058093131' #My Steam ID
+
 
 restServer = Flask(__name__)
 CORS(restServer) #Allows CORS
 mysql = MySQL()
-#Data base details
+#Database details
 restServer.config['MYSQL_DATABASE_USER'] = 'oscar.reid'
 restServer.config['MYSQL_DATABASE_PASSWORD'] = '6wfCwA7O'
 restServer.config['MYSQL_DATABASE_DB'] = 'oscarreid_aWeb'
@@ -19,6 +20,7 @@ restServer.config['MYSQL_DATABASE_HOST'] = 'cs2s.yorkdc.net'
 restServer.config['MYSQL_DATABASE_PORT'] = 3306
 restServer.config['MYSQL_DATABASE_CHARSET'] = 'utf8'
 mysql.init_app(restServer)
+#Connecting to server
 conn = mysql.connect()
 cursor = conn.cursor()
 
@@ -59,7 +61,7 @@ def sendCoD(playerID, mapID, gameModeID, kills, deaths, assists, accuracy):
             conn.commit()
             return "Success"
     else:
-        return "Invalid playerID"
+        return "Invalid playerID"#If PlayerID was Invalid returns this
 
 #Delete Entry From CoD Table providing authcode matches
 @restServer.route("/delCoD/<EntryID>/<AuthCode>", methods=['POST'])
@@ -160,16 +162,16 @@ def sendD2(playerID, mapID, MotesDeposited, HostilesDefeated, GuardiansDefeated,
     if(int(playerID) > 0):
         if (mapID != "Kell's Grave" and mapID != "Legion's Folly" and mapID != "Catherdral of Scars" and mapID != "Emerald Coast"):
             return "Invalid Map"
-        elif (int(MotesDeposited) > 75 or int(MotesDeposited) < 0):
-            return "Motes Bank value is impossible. Must be between 0 and 75"
+        elif (int(MotesDeposited) > 225 or int(MotesDeposited) < 0):
+            return "Motes Bank value is impossible. Must be between 0 and 225"
         elif (int(HostilesDefeated) > 500 or int(HostilesDefeated) < 0):
             return "Hostile Kills value is impossible. Must be between 0 and 500"
         elif (int(GuardiansDefeated) > 100 or int(GuardiansDefeated) < 0):
-            return "Assists value is impossible. Must be between 0 and 100"
+            return "Player Kills value is impossible. Must be between 0 and 100"
         elif (int(MotesLost) > 500 or int(MotesLost) < 0):
-            return "Accuracy value is impossible. Must be between 0 and 500"
+            return "Motes Lost value is impossible. Must be between 0 and 500"
         elif (int(PrimevalHealed) > 100 or int(PrimevalHealed) < 0):
-            return "Accuracy value is impossible. Must be between 0 and 100"
+            return "Healed value is impossible. Must be between 0 and 100"
         else:
             cursor.execute("INSERT INTO D2 (playerID, mapID, MotesDeposited, HostilesDefeated, GuardiansDefeated, MotesLost, PrimevalHealed) VALUES (%s, %s, %s, %s, %s, %s, %s)", (playerID, mapID, MotesDeposited, HostilesDefeated, GuardiansDefeated, MotesLost, PrimevalHealed))
             conn.commit()
@@ -295,4 +297,4 @@ def getSteamProfile(steamID):
 
 if __name__ == '__main__':
     print("== Running in debug mode ==")
-    restServer.run(host='cs2s.yorkdc.net', port=5011, debug=True, threaded=True)
+    restServer.run(host=HostURL, port=PortNumber, debug=True, threaded=True)

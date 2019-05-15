@@ -161,17 +161,9 @@
               document.getElementById("ComCoDResult").innerHTML = "Please enter values";
               } else {
               getCoDAvgStats(p1ID, p2ID, gameMode);
-              //wait(1000);
               //getCoDAvgStats(p2ID, gameMode);
               }
 
-            }
-
-            function wait(ms) {
-              var d = new Date();
-              var d2 = null;
-              do { d2 = new Date(); }
-              while(d2-d < ms);
             }
 
             //Adds a row to the comparison table
@@ -475,11 +467,17 @@
 
 
               //Takes two steam IDs and finds games both users have
+              //This querys the server which querys the Steam API
             function compareGames() {
               var SteamID1 = document.getElementById("getFGP1").value;
               var SteamID2 = document.getElementById("getFGP2").value;
               var ID1Games;
               var ID2Games;
+              var Parent = document.getElementById("matchGameTable");
+              while(Parent.hasChildNodes())
+              {
+                Parent.removeChild(Parent.firstChild);
+              }
 
               //idtest = pData.response.games[0].appid;
               if(SteamID1 == "" || SteamID2 == "") {
@@ -530,6 +528,8 @@
               return matchedGames;
             }
 
+            //Querys the server which wuerys the Steam API to get the description of a game
+            //It then selects the Steam game name from the JSON object
             function findGameName(gameID) {
               $.get(server + "getSteamGameDes/" + gameID, function(data, status){
                 var pData = JSON.parse(data);
@@ -566,6 +566,11 @@
             //Takes a steamID from a input field and updates a table with all that IDs friends
             function findFriends(){
               var steamID = document.getElementById("getSteamID").value;
+              var Parent = document.getElementById("friendsTable");
+              while(Parent.hasChildNodes())
+              {
+                Parent.removeChild(Parent.firstChild);
+              }
               $.get(server + "getSteamFriends/" + steamID, function(data, status){
                 if(data == "Invalid Steam ID" || data == "Steam ID is incorrect length") {
                   document.getElementById("FriendsSteam").innerHTML = data;
@@ -603,7 +608,7 @@
               var CoDPage = document.getElementById("CoDStats");
             }
 
-            //Hids all divs apart from the home div
+            //Hides all divs apart from the home div
             function getHomePage() {
               var CoDPage = document.getElementById("HomePage");
               if (CoDPage.style.display === "none") {
@@ -615,7 +620,7 @@
               }
             }
 
-            //Hids all divs apart from the CoD div
+            //Hides all divs apart from the CoD div
             function getCoDPage() {
               var CoDPage = document.getElementById("CoDStats");
               if (CoDPage.style.display === "none") {
@@ -627,7 +632,7 @@
               }
             }
 
-            //Hids all divs apart from the D2 div
+            //Hides all divs apart from the D2 div
             function getD2Page() {
              var D2Page = document.getElementById("D2Stats");
               if (D2Page.style.display === "none") {
@@ -639,7 +644,7 @@
               }
             }
 
-            //Hids all divs apart from the find games div
+            //Hides all divs apart from the find games div
             function getFindGamePage() {
              var FindGamePage = document.getElementById("FindGamePage");
               if (FindGamePage.style.display === "none") {
@@ -653,8 +658,6 @@
 
             //Used to hide the divs at the on page load
             function hide() {
-              //getD2Page()
-              //getCoDPage()
               var D2Page = document.getElementById("D2Stats");
               D2Page.style.display = "none";
               var CoDPage = document.getElementById("CoDStats");
@@ -675,7 +678,7 @@
       </style>
    </head>
    <body onload="hide()" class="bg-info text-white">
-      ><!-- Hides all divs on page load -->
+      <!-- Hides all divs on page load -->
       <div id="StatsPages">
          <!-- Nav Bar -->
          <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top justify-content-center">
@@ -710,14 +713,15 @@
                <p>Here you store results from CoD Black Ops 4 matches and Destiny 2 Gambit matches</p>
                <p>Or if you want to find a game that both you and a friend have on Steam you can also do that</p>
                <p>All forms verify the values inputted to check they are possible values</p>
-               <p>So no you can't input that you got 500 kills and 0 deaths in one game</p>
-               <p>Pick a option from the menu above to get started</p>
+               <p>So no you can't input that you got 500 kills and 0 deaths in Free for All</p>
+               <p>Pick a option from the nav bar above to get started</p>
             </div>
          </div>
          <!-- CoD Page -->
          <div id="CoDStats" class="container">
             <h2>Submit CoD Stats</h2>
             <p>Input stats from a Call of Duty Black Ops 4 match for a particular player</p>
+            <p>Player ID must be a number, Kills, Death, Assists and Accuracy cannot exceed 100</p>
             <!-- Submit stats input fields -->
             <div class="row">
                <div class="col">
@@ -757,7 +761,7 @@
                </div>
                </form>
             </div>
-            <h2 id="SubmitCoDResult"></h2>
+            <h2 id="SubmitCoDResult"></h2> <!-- Displays response from server -->
             <p>  <br /> </p>
             <!-- Delete stats input field for CoD -->
             <h2>Delete CoD stats using Entry ID</h2>
@@ -776,7 +780,7 @@
                </div>
                </form>
             </div>
-            <h2 id="DelCoDResult"></h2>
+            <h2 id="DelCoDResult"></h2> <!-- Displays response from server -->
             <p>  <br /> </p>
             <!-- Search for CoD stats -->
             <h2>Search CoD stats using Player ID</h2>
@@ -792,7 +796,7 @@
                </div>
                </form>
             </div>
-            <h2 id="FindCoDResult"></h2>
+            <h2 id="FindCoDResult"></h2> <!-- Displays response from server -->
             <p>  <br /> </p>
             <!-- Input form -->
             <!-- Table of CoD stats -->
@@ -842,7 +846,7 @@
                </div>
                </form>
             </div>
-            <h2 id="ComCoDResult"></h2>
+            <h2 id="ComCoDResult"></h2> <!-- Displays response from server -->
             <!-- Comparison Table -->
             <div class="container">
                <h2>CoD Stats</h2>
@@ -861,6 +865,7 @@
          <div id="D2Stats" class="container">
             <h2>Submit Destiny 2 Stats</h2>
             <p>Input stats from a Destiny 2 gambit match for a particular player</p>
+            <p>Player ID must be a number, Motes Bank cannot exceed 225, Hostiles Kills and Motes Lost cannot exceed 500, Player Kills and Healed cannot exceed 100</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -895,7 +900,7 @@
                </div>
                </form>
             </div>
-            <h2 id="SubmitD2Result"></h2>
+            <h2 id="SubmitD2Result"></h2> <!-- Displays response from server -->
             <p>  <br /> </p>
             <h2>Delete Destiny 2 stats using Entry ID</h2>
             <p>Delete a match entry for using Entry ID and the authorisation code</p>
@@ -914,7 +919,7 @@
                </div>
                </form>
             </div>
-            <h2 id="DelD2Result"></h2>
+            <h2 id="DelD2Result"></h2> <!-- Displays response from server -->
             <p>  <br /> </p>
             <h2>Search Destiny 2 stats using Player ID</h2>
             <p>Enter a player ID to retrieve all their matches or leave blank to retrieve all matches</p>
@@ -933,7 +938,7 @@
             <p>  <br /> </p>
             <div class="container">
                <h2>Destiny 2 Stats</h2>
-               <table id="statsTableD2" class="table table-hover">
+               <table class="table table-hover">
                   <tr>
                      <td>Entry ID</td>
                      <td>Player ID</td>
@@ -943,6 +948,10 @@
                      <td>Guardians Defeated</td>
                      <td>MotesLost</td>
                      <td>Primeval Healed</td>
+                  </tr>
+               </table>
+               <table id="statsTableD2" class="table table-hover">
+                  <tr>
                   </tr>
                </table>
             </div>
@@ -963,7 +972,7 @@
                </div>
                </form>
             </div>
-            <h2 id="ComD2Result"></h2>
+            <h2 id="ComD2Result"></h2> <!-- Displays response from server -->
             <div class="container">
                <h2>Destiny 2 Stats</h2>
                <table id="comTableD2" class="table table-hover">
@@ -997,10 +1006,14 @@
             <h2 id="FriendsSteam"></h2>
             <div class="container">
                <h2>Friends List</h2>
-               <table id="friendsTable" class="table table-hover">
+               <table class="table table-hover">
                   <tr>
                      <td>Steam Name</td>
                      <td>Steam ID</td>
+                  </tr>
+               </table>
+               <table id="friendsTable" class="table table-hover">
+                  <tr>
                   </tr>
                </table>
             </div>
@@ -1021,7 +1034,7 @@
                </div>
                </form>
             </div>
-            <h2 id="CompareSteam"></h2>
+            <h2 id="CompareSteam"></h2> <!-- Displays response from server -->
             <div class="container">
                <h2>Matching Games</h2>
                <table id="matchGameTable" class="table table-hover">
