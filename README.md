@@ -1,19 +1,20 @@
 Oscar Reid's Advanced Web 3CB109 Project
 Student ID: 169063841
+Assigned port number: 5011
 
 On CS2S Server the files are located at: /home/oscar.reid/htdocs
 Server File is called: server.py
 Client File is called: index.html
-jQuery File is called: jquery-3.3.1.min.js
 
 
 URL of Web Client is: cs2s.yorkdc.net/~oscar.reid/
-URL for Web Server is: cs2s.yorkdc.net
-Assigned port number: 5011
+URL for Web Server is: cs2s.yorkdc.net:5011
+
 
 The Port Number and Server URL can be easily changed by modifying the values titled PortNumber and HostURL at the top of server.py
 
 External Sources:
+jQuery was used for querying the server - https://jquery.com/
 Bootstrap 4 was used for styling - https://getbootstrap.com/docs/4.0/getting-started/introduction/
 Steam APIs were used for the Find Game page - https://developer.valvesoftware.com/wiki/Steam_Web_API#GetNewsForApp_.28v0001.29
 
@@ -45,6 +46,11 @@ Destiny 2 table name: D2
 EntryID, Player ID, Map Name, Game mode, Kills, Deaths, Assists, Accuracy
 int AUTO_INCREMENT, varchar, varchar, varchar, varchar, varchar, varchar, varchar
 
+
+Server Guide:
+When the client asks for games stats the server queries the database
+It then uses the returned data and formats it into key value pairs
+This data is passed into jsonify and returned to the client
 
 API Calls and what they do:
 
@@ -104,14 +110,26 @@ Get Steam game description using a game ID
 /getSteamGameDes/gameID
 This calls the Steam API
 'http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=' + SteamKey + '&appid=' + gameID
-returns a JSON object of steam games descriptions
+returns a JSON object of a Steam game description
 
 Client Guide and advanced features:
 Below are the instructions for how each feature on the client works and the method it uses and if it is a mashup or not
 
+Input and result validation:
+The Client checks that all input fields are filled before submitting a request to the server
+The server checks the inputs are correct such as the map is from the list of options
+The server also checks that the values submitted are possible within the game such as the max possible CoD Kills is 100 any value over will return Kills value is impossible
+Before the server returns results from the database it checks that there are results in it
+If not it will return "No results found" which the client displays
+
 CoD and Destiny 2 Pages
 Submit Stats - GET:
 Input values into the fields and click submit
+Values must be legitimate values these are
+CoD:
+Kils between 0 - 100, Deaths 0 - 100, Assists 0 - 100, Accuracy 0 - 100
+D2:
+Motes Bank 0 - 225, Hostile Kills 0 - 500, Player Kills 0 - 100, Motes Lost 0 - 500, Healed 0 - 100
 This calls a function that fetches the values from the fields
 It then calls the sendCoD or sendD2 API using jQuery GET with the values in the API call
 For CoD the calls is /sendCoD/<playerID>/<mapID>/<gameModeID>/<kills>/<deaths>/<assists>/<accuracy>
@@ -120,10 +138,10 @@ The server then inserts the values into the database using SQL
 
 Delete Stats - POST:
 Enter a EntryID and the Authorisation code (123) and click submit
-This calls a function that fetches the values from the fields
 Entry IDs can be found by search for stats without a specified player ID
+This calls a function that fetches the values from the fields
 It then calls /delCoD/<EntryID>/<AuthCode> or /delD2/<EntryID>/<AuthCode> API using jQuery POST with the values in the API call
-The server then checks the authorisation code is correct and if it is search for that entry ID and deletes the entry from the database table
+The server then checks the authorisation code is correct and if it is searches for that entry ID and deletes the entry from the database table
 
 Search for Stats - GET:
 This input field can be left blank or you can enter a player ID (12 or 13 have prefilled entries or make your own by submitting stats)
@@ -155,29 +173,3 @@ The server /getSteamGameDes/<gameID> is called with each game ID which calls a S
 The client then finds the name of the game from the JSON object
 Providing the name isn't null which is the case with deleted games or SteamTestApp which is a test game it is added to the matching games table
 Then table displays the names of all the games owned by both IDs
-
-Server Guide:
-When the client asks for games stats the server queries the database
-It then uses the returned data and formats it into key value pairs
-This data passed into jsonify and returned
-
-The server makes use of the following Steam APIs to get JSON objects for:
-Players friends list
-http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=' + SteamKey + '&steamid=' + steamID + '&relationship=friend
-
-Player Profiles:
-http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + SteamKey + '&steamids=' + steamID
-
-Player Steam Games
-http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=' + SteamKey + '&steamid=' + steamID +'&format=json
-
-Game descriptions
-http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=' + SteamKey + '&appid=' + gameID
-
-
-Input and result validation:
-The Client checks that all input fields are filled before submitting a request to the server
-The server checks the inputs are correct such as the map is from the list of options
-The server also checks that the values submitted are possible within the game such as the max possible CoD Kills is 100 any value over will return Kills value is impossible
-Before the server returns results from the database it checks that there are results in it
-If not it will return "No results found" which the client displays

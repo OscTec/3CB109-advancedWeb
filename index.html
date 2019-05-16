@@ -489,19 +489,31 @@
                   document.getElementById("CompareSteam").innerHTML = data;
                 } else {
                   var pData = JSON.parse(data);
-                  ID1Games = pData;
-                  //console.log(ID1Games);
-                  $.get(server + "getSteamGames/" + SteamID2, function(data, status){
-                    if(data == "Invalid Steam ID" || data == "Steam ID is incorrect length") {
-                      document.getElementById("CompareSteam").innerHTML = data;
-                    } else {
-                      var pData = JSON.parse(data);
-                      ID2Games = pData;
-                      //console.log(ID2Games.response.games.length);
-                      console.log(compareArrays(ID1Games, ID2Games));
-                    }
+                  if(pData.response.games == undefined) {
+                    document.getElementById("CompareSteam").innerHTML = SteamID1 + " Has no games";
+                  } else {
+                    ID1Games = pData;
+                    //console.log(ID1Games);
+                    $.get(server + "getSteamGames/" + SteamID2, function(data, status){
+                      if(data == "Invalid Steam ID" || data == "Steam ID is incorrect length") {
+                        document.getElementById("CompareSteam").innerHTML = data;
+                      } else {
+                        var pData = JSON.parse(data);
+                        if(pData.response.games == undefined){
+                          document.getElementById("CompareSteam").innerHTML = SteamID2 + " Has no games";
+                        } else {
+                          ID2Games = pData;
+                          compareArrays(ID1Games, ID2Games)
+                        }
 
-                  });
+
+                        //console.log(ID2Games.response.games.length);
+                        //console.log(compareArrays(ID1Games, ID2Games));
+                      }
+
+                    });
+                  }
+
                 }
 
               });
@@ -766,6 +778,7 @@
             <!-- Delete stats input field for CoD -->
             <h2>Delete CoD stats using Entry ID</h2>
             <p>Delete a match entry for using Entry ID and the authorisation code</p>
+            <p>Use search function to find Entry IDs</p>
             <p>FOR TESTING: Authorisation Code = 123</p>
             <div class="row">
                <div class="col">
@@ -785,7 +798,7 @@
             <!-- Search for CoD stats -->
             <h2>Search CoD stats using Player ID</h2>
             <p>Enter a player ID to retrieve all their matches or leave blank to retrieve all matches</p>
-            <p>FOR TESTING: I set results for player ID 12 and 13</p>
+            <p>FOR TESTING: Results for ID 12 and 13 have filled in the database</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -824,7 +837,7 @@
             <h2>Compare CoD player stats using Player ID</h2>
             <p>Enter two player IDs to compare their average match results</p>
             <p>FOR TESTING: I set results for players ID 12 and 13</p>
-            <p>FOR TESTING: You can create your own stats using the submit and use them for comparison if you want</p>
+            <p>FOR TESTING: You can create your own stats using the submit and use them for comparison</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -849,7 +862,7 @@
             <h2 id="ComCoDResult"></h2> <!-- Displays response from server -->
             <!-- Comparison Table -->
             <div class="container">
-               <h2>CoD Stats</h2>
+               <h2>CoD Average Stats</h2>
                <table id="comTableCoD" class="table table-hover">
                   <tr>
                      <td>Player ID</td>
@@ -958,7 +971,7 @@
             <br>
             <h2>Compare Destiny 2 player stats using Player ID</h2>
             <p>FOR TESTING: I set results for players ID 12 and 13</p>
-            <p>FOR TESTING: You can create your own stats using the submit and use them for comparison if you want</p>
+            <p>FOR TESTING: You can create your own stats using the submit and use them for comparison</p>
             <div class="row">
                <div class="col">
                   <form>
@@ -974,7 +987,7 @@
             </div>
             <h2 id="ComD2Result"></h2> <!-- Displays response from server -->
             <div class="container">
-               <h2>Destiny 2 Stats</h2>
+               <h2>Destiny 2 Average Stats</h2>
                <table id="comTableD2" class="table table-hover">
                   <tr>
                      <td>Player ID</td>
@@ -1020,6 +1033,7 @@
             <h2>Find matching games</h2>
             <p>Enter 2 Steam IDs to get a list of games both IDs have</p>
             <p>FOR TESTING: Use my Steam ID: 76561198058093131 and 76561197983520575 but any valid Steam IDs will work</p>
+            <p>FOR TESTING: To show that it can hendle IDs with no games 76561198058093999 can be used</p>
             <div class="row">
                <div class="col">
                   <form>
